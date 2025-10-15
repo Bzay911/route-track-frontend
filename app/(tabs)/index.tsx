@@ -1,98 +1,102 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: '#1a1f3a' }}>
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-6 py-4" style={{ backgroundColor: '#1a1f3a' }}>
+        <View className="w-12 h-12 bg-white/20 rounded-full items-center justify-center">
+          <Text className="text-white text-lg font-semibold">A</Text>
+        </View>
+        
+        <View className="flex-1 items-center">
+          <Text className="text-white/70 text-lg">Good morning</Text>
+          <Text className="text-white text-lg font-semibold">Alex</Text>
+        </View>
+        
+        <TouchableOpacity className="p-2">
+          <Ionicons name="notifications-outline" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {/* Next Ride Section */}
+        <View className="mx-6 mt-6">
+          <View className="bg-white/10 rounded-2xl p-6">
+            <View className="bg-white/20 rounded-lg px-3 py-1 self-start mb-4">
+              <Text className="text-white text-xs font-medium">Next Ride</Text>
+            </View>
+            
+            <Text className="text-white text-2xl font-bold mb-2">Coastal Highway Run</Text>
+            <Text className="text-white/70 text-base mb-6">Epic coastal ride with stunning ocean views.</Text>
+            
+            <View className="space-y-3 mb-6">
+              <View className="flex-row items-center">
+                <Ionicons name="calendar-outline" size={20} color="white" />
+                <Text className="text-white/70 ml-3">Dec 15, 2025</Text>
+              </View>
+              <View className="flex-row items-center">
+                <Ionicons name="time-outline" size={20} color="white" />
+                <Text className="text-white/70 ml-3">9:00 AM</Text>
+              </View>
+              <View className="flex-row items-center">
+                <Ionicons name="location-outline" size={20} color="white" />
+                <Text className="text-white/70 ml-3">Pacific Coast Highway</Text>
+              </View>
+            </View>
+            
+            <TouchableOpacity style={{ backgroundColor: '#ff6b36' }} className="rounded-xl py-4 items-center">
+              <Text className="text-white font-semibold">View Details</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Upcoming Rides Section */}
+        <View className="mx-6 mt-8">
+          <Text className="text-white text-2xl font-bold mb-6">Upcoming Rides</Text>
+          
+          {[1, 2, 3].map((item) => (
+            <View key={item} className="bg-white/10 rounded-2xl p-6 mb-4 border border-white/20">
+              <Text className="text-white text-lg font-bold mb-4">Coastal Highway Run</Text>
+              
+              <View className="space-y-3 mb-6">
+                <View className="flex-row items-center">
+                  <Ionicons name="calendar-outline" size={18} color="white" />
+                  <Text className="text-white/70 ml-3 text-sm">Dec 15, 2025</Text>
+                </View>
+                <View className="flex-row items-center">
+                  <Ionicons name="time-outline" size={18} color="white" />
+                  <Text className="text-white/70 ml-3 text-sm">9:00 AM</Text>
+                </View>
+                <View className="flex-row items-center">
+                  <Ionicons name="location-outline" size={18} color="white" />
+                  <Text className="text-white/70 ml-3 text-sm">Pacific Coast Highway</Text>
+                </View>
+              </View>
+              
+              <View className="flex-row justify-between items-center">
+                <View className="flex-row items-center">
+                  <Ionicons name="bicycle-outline" size={16} color="white" />
+                  <Text className="text-white/70 ml-2 text-sm">8 riders</Text>
+                </View>
+                <TouchableOpacity style={{ backgroundColor: '#ff6b36' }} className="rounded-lg px-4 py-2">
+                  <Text className="text-white text-sm font-medium">View on map</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </View>
+        
+        <View className="h-20" />
+      </ScrollView>
+
+      {/* Floating Action Button */}
+      <TouchableOpacity className="absolute bottom-6 right-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg">
+        <Ionicons name="add" size={24} color="#1a1f3a" />
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
