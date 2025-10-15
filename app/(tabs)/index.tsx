@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
+  const router = useRouter();
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: '#1a1f3a' }}>
       {/* Header */}
@@ -93,7 +95,7 @@ export default function HomeScreen() {
       </ScrollView>
 
       {/* Floating Action Button */}
-      <TouchableOpacity className="absolute bottom-6 right-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg">
+      <TouchableOpacity onPress={() => router.push('/protected/createRide')} className="absolute bottom-6 right-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg">
         <Ionicons name="add" size={24} color="#1a1f3a" />
       </TouchableOpacity>
     </SafeAreaView>
