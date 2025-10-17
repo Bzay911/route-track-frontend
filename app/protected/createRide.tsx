@@ -4,21 +4,21 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Alert,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const createRide = () => {
   const [rideName, setRideName] = useState("");
   const [destination, setDestination] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<Date | null>(null);
   const [description, setDescription] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -28,19 +28,16 @@ const createRide = () => {
   const handleDateChange = (event: any, date?: Date) => {
     setShowDatePicker(false);
     if (date) {
-      const formattedDate = date.toLocaleDateString();
-      setSelectedDate(formattedDate);
+      // Store the Date object directly - no conversion needed!
+      setSelectedDate(date);
     }
   };
 
   const handleTimeChange = (event: any, time?: Date) => {
     setShowTimePicker(false);
     if (time) {
-      const formattedTime = time.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      setSelectedTime(formattedTime);
+      // Store the Date object directly - no conversion needed!
+      setSelectedTime(time);
     }
   };
   
@@ -76,8 +73,8 @@ const createRide = () => {
             body: JSON.stringify({
                 rideName,
                 destination,
-                selectedDate,
-                selectedTime,
+                selectedDate: selectedDate?.toISOString(),
+                selectedTime: selectedTime?.toISOString(),
                 description
             }),
         });
@@ -137,7 +134,7 @@ const createRide = () => {
             <Text
               className={`ml-3 text-base ${selectedDate ? "text-white" : "text-gray-400"}`}
             >
-              {selectedDate || "Select date"}
+              {selectedDate ? selectedDate.toLocaleDateString() : "Select date"}
             </Text>
           </TouchableOpacity>
 
@@ -165,7 +162,7 @@ const createRide = () => {
             <Text
               className={`ml-3 text-base ${selectedTime ? "text-white" : "text-gray-400"}`}
             >
-              {selectedTime || "Select time"}
+              {selectedTime ? selectedTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Select time"}
             </Text>
           </TouchableOpacity>
            {showTimePicker && (
