@@ -41,7 +41,7 @@ const rides = () => {
         >
           {rides.map((ride, index) => {
             return (
-              <RideCard key={ride.id || `ride-${index}`} ride={ride} />
+              <RideCard key={ride._id || `ride-${index}`} ride={ride} />
             );
           })}
         </ScrollView>

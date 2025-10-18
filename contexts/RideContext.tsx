@@ -3,12 +3,12 @@ import { API_BASE_URL } from "../config/apiConfig";
 
 // Define the Ride interface
 interface Ride {
-  id: string;
+  _id: string;
   rideName: string;
   rideDescription?: string;
   rideDestination: string;
   rideDate?: string;
-  startTime: string;
+  rideTime: string;
   participants?: string[];
   createdBy?: string;
   createdAt: string;
@@ -20,6 +20,7 @@ interface RideContextValue {
   fetchAllRides: () => Promise<void>;
   isLoading?: boolean;
   error?: string | null;
+  setRides: React.Dispatch<React.SetStateAction<Ride[] | null>>;
 }
 
 // Define the provider props interface
@@ -68,7 +69,8 @@ export const RideProvider = ({children}: RideProviderProps) => {
         rides,
         fetchAllRides,
         isLoading,
-        error
+        error,
+        setRides
     };
 
     return(

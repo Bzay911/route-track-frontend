@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRide } from "@/contexts/RideContext";
 
 const createRide = () => {
   const [rideName, setRideName] = useState("");
@@ -23,6 +24,7 @@ const createRide = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { setRides } = useRide();
 
   const router = useRouter();
   const handleDateChange = (event: any, date?: Date) => {
@@ -65,25 +67,28 @@ const createRide = () => {
 
     try{
         setIsLoading(true);
+        const newRide = {
+           rideName,
+                destination,
+                selectedDate: selectedDate?.toISOString(),
+                selectedTime: selectedTime?.toISOString(),
+                description
+        }
         const response = await fetch(`${API_BASE_URL}/api/rides/create-ride`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                rideName,
-                destination,
-                selectedDate: selectedDate?.toISOString(),
-                selectedTime: selectedTime?.toISOString(),
-                description
-            }),
+            body: JSON.stringify(
+               newRide
+            ),
         });
         if(!response.ok){
             throw new Error("Failed to create ride");
         }
         const data = await response.json();
         setIsLoading(false);
-        console.log(data);
+        setRides(prev => [data.ride, ...(prev || [])]);
         Alert.alert("Ride created successfully");
         router.push("/");
     } catch (error) {
