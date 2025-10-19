@@ -121,24 +121,10 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        {/* {rides && rides.length > 0 ? (
-          rides
-            .slice(1)
-            .map((ride, index) => (
-              <RideCard key={ride.id || `ride-${index}`} ride={ride} />
-            ))
-        ) : (
-          <View className="bg-white/10 rounded-2xl p-6 mb-4 border border-white/20">
-            <Text className="text-white/70 text-center">
-              No upcoming rides found
-            </Text>
-          </View>
-        )} */}
-
         {upcomingRides.length > 0 ? (
           upcomingRides.map((ride) => <RideCard key={ride._id} ride={ride} />)
         ) : (
-          <View className="bg-white/10 rounded-2xl p-6 mb-4 border border-white/20">
+          <View className="bg-white/10 mx-6 rounded-2xl p-6 mb-4 border border-white/20">
             <Text className="text-white/70 text-center">
               No upcoming rides found
             </Text>

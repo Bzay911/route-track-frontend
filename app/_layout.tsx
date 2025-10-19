@@ -22,6 +22,7 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
           <Stack.Screen name="protected/createRide" options={{ presentation: 'modal', title: 'Create Ride'}} />
+          <Stack.Screen name="ride/[id]" options={{ title: ''}} />
         </Stack>
         </RideProvider>
         <StatusBar style="auto" />
