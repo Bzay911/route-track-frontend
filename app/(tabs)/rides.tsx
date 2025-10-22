@@ -10,8 +10,10 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 
 const Rides = () => {
+   const router = useRouter();
   const { rides, isLoading, error } = useRide();
   const [activeFilter, setActiveFilter] = useState<
     "all" | "today" | "upcoming" | "past"
@@ -95,6 +97,13 @@ const Rides = () => {
           </Text>
         </View>
       )}
+        {/* Floating Action Button */}
+      <TouchableOpacity
+        onPress={() => router.push("/protected/createRide")}
+        className="absolute bottom-6 right-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
+      >
+        <Ionicons name="add" size={24} color="#1a1f3a" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };

@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../global.css';
 import { RideProvider } from '@/contexts/RideContext';
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -16,6 +17,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <RideProvider>
         <Stack>
@@ -23,10 +25,12 @@ export default function RootLayout() {
           <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
           <Stack.Screen name="protected/createRide" options={{ presentation: 'modal', title: 'Create Ride'}} />
           <Stack.Screen name="ride/[id]" options={{ title: ''}} />
+          <Stack.Screen name="protected/startRide" options={{ headerShown: false}} />
         </Stack>
         </RideProvider>
         <StatusBar style="auto" />
       </ThemeProvider>
+      </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 }
