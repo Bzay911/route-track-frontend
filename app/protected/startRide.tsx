@@ -63,8 +63,8 @@ const startRide = () => {
       <GestureHandlerRootView style={{ flex: 1 }}>
         {/* Map Container */}
         <View className="flex-1 rounded-2xl overflow-hidden shadow-2xl relative">
-          <TouchableOpacity onPress={() => {router.back()}} className="absolute top-4 left-4 z-10 bg-gray-400 rounded-full">
-      <Ionicons name="arrow-back" size={28} color="white" className="m-4" />
+          <TouchableOpacity onPress={() => {router.back()}} className="absolute top-4 left-2 z-10 bg-white rounded-full">
+      <Ionicons name="arrow-back" size={28} color="black" className="p-2" />
           </TouchableOpacity>
           <MapboxGL.MapView
             style={{ flex: 1 }}
@@ -96,8 +96,8 @@ const startRide = () => {
                  ItemSeparatorComponent={() => <View style={{ height: 12 }} />} // adds space between items
               />
             </View>
-            <TouchableOpacity className="p-6 bg-gray-500 rounded-2xl items-center justify-center mx-6 mt-4">
-              <Text>I'm ready </Text>
+            <TouchableOpacity className="p-6 rounded-2xl items-center justify-center mx-6 mt-4" style={{ backgroundColor: "#ff6b36" }}>
+              <Text className="font-semibold text-white">I'm ready </Text>
             </TouchableOpacity>
           </BottomSheetView>
         </BottomSheet>
