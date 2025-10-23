@@ -1,36 +1,43 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import '../global.css';
-import { RideProvider } from '@/contexts/RideContext';
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Slot, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
+import { AuthProvider, useAuth } from "../contexts/AuthContext";
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+function LayoutController() {
+  const { token, loading } = useAuth();
+  const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+  // Ensure component is mounted before navigation
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted || loading) return;
+
+    if (!token) {
+      router.replace("/auth/Login");
+    } else {
+      router.replace("/(protected)/(tabs)");
+    }
+  }, [isMounted, loading, token]);
+
+  if (!isMounted || loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  return <Slot />;
+}
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <SafeAreaProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <RideProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-          <Stack.Screen name="protected/createRide" options={{ presentation: 'modal', title: 'Create Ride'}} />
-          <Stack.Screen name="ride/[id]" options={{ title: ''}} />
-          <Stack.Screen name="protected/startRide" options={{ headerShown: false}} />
-        </Stack>
-        </RideProvider>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-      </GestureHandlerRootView>
-    </SafeAreaProvider>
+    <AuthProvider>
+      <LayoutController />
+    </AuthProvider>
   );
 }

@@ -10,7 +10,7 @@ const RideCard = ({ ride }: { ride: any }) => {
 
   const handleRidePress = (ride: any) => {
     router.push({
-      pathname: "/ride/[id]",
+      pathname: "/protected/ride/[id]",
       params: {
         id: ride._id,
         name: ride.rideName,

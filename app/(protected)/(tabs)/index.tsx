@@ -134,27 +134,23 @@ export default function HomeScreen() {
         <View className="h-20" />
       </ScrollView>
 
-      {rides && rides.length > 0 ? 
-      (
-         <TouchableOpacity
-    onPress={() => router.push("/protected/startRide")}
-    className="absolute bottom-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
-    style={{ alignSelf: 'center' }} // center horizontally
-  >
-    <Ionicons name="add" size={24} color="#1a1f3a" />
-  </TouchableOpacity>
-      )
-       : 
-       (
-      <TouchableOpacity
-        onPress={() => router.push("/protected/createRide")}
-        className="absolute bottom-6 right-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
-      >
-        <Ionicons name="add" size={24} color="#1a1f3a" />
-        {/* <Text className="sr-only">Create Ride</Text> */}
-      </TouchableOpacity>
-       ) }  
-     
+      {rides && rides.length > 0 ? (
+        <TouchableOpacity
+          onPress={() => router.push("/protected/startRide")}
+          className="absolute bottom-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
+          style={{ alignSelf: "center" }} // center horizontally
+        >
+          <Ionicons name="add" size={24} color="#1a1f3a" />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          onPress={() => router.push("/protected/createRide")}
+          className="absolute bottom-6 right-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
+        >
+          <Ionicons name="add" size={24} color="#1a1f3a" />
+          {/* <Text className="sr-only">Create Ride</Text> */}
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 }

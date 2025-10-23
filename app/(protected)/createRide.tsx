@@ -13,9 +13,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRide } from "@/contexts/RideContext";
+import { useRide } from "../../contexts/RideContext";
 
-const createRide = () => {
+const CreateRide = () => {
   const [rideName, setRideName] = useState("");
   const [destination, setDestination] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -214,4 +214,4 @@ const createRide = () => {
     );
   };
 
-export default createRide;
+export default CreateRide;

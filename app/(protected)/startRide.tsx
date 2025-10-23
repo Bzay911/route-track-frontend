@@ -1,25 +1,26 @@
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import MapboxGL from "@rnmapbox/maps";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useRef } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import LobbyRiderCard from '../../components/LobbyRiderCard';
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+// import MapboxGL from "@rnmapbox/maps";
 
-const startRide = () => {
+// const MAP_BOX_API_KEY = process.env.EXPO_PUBLIC_MAP_BOX_API_KEY;
+
+// if (!MAP_BOX_API_KEY) {
+//   throw new Error(
+//     "Missing EXPO_PUBLIC_MAP_BOX_API_KEY in environment variables"
+//   );
+// }
+
+// MapboxGL.setAccessToken(MAP_BOX_API_KEY);
+
+const StartRide = () => {
   const router = useRouter();
 
-  const MAP_BOX_API_KEY = process.env.EXPO_PUBLIC_MAP_BOX_API_KEY;
-
-  if (!MAP_BOX_API_KEY) {
-    throw new Error(
-      "Missing EXPO_PUBLIC_MAP_BOX_API_KEY in environment variables"
-    );
-  }
-
-  MapboxGL.setAccessToken(MAP_BOX_API_KEY);
 
   // Ref for bottom sheet
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -66,7 +67,7 @@ const startRide = () => {
           <TouchableOpacity onPress={() => {router.back()}} className="absolute top-4 left-2 z-10 bg-white rounded-full">
       <Ionicons name="arrow-back" size={28} color="black" className="p-2" />
           </TouchableOpacity>
-          <MapboxGL.MapView
+          {/* <MapboxGL.MapView
             style={{ flex: 1 }}
             styleURL={MapboxGL.StyleURL.Street}
           >
@@ -76,7 +77,7 @@ const startRide = () => {
                 zoomLevel: 10,
               }}
             />
-          </MapboxGL.MapView>
+          </MapboxGL.MapView> */}
         </View>
         <BottomSheet ref={bottomSheetRef} snapPoints={["20%", "50%", "90%"]}>
           <BottomSheetView className="flex-1">
@@ -106,4 +107,4 @@ const startRide = () => {
   );
 };
 
-export default startRide;
+export default StartRide;

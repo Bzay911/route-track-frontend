@@ -9,8 +9,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import formatDate from "@/utils/FormatDate";
-import formatTime from "@/utils/FormatTime";
+import formatDate from "../../../utils/FormatDate";
+import formatTime from "../../../utils/FormatTime";
 
 type Tab = "members" | "invite";
 
