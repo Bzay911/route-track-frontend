@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRide } from "../../contexts/RideContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CreateRide = () => {
   const [rideName, setRideName] = useState("");
@@ -25,6 +26,7 @@ const CreateRide = () => {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { setRides } = useRide();
+  const { token } = useAuth();
 
   const router = useRouter();
   const handleDateChange = (event: any, date?: Date) => {
@@ -78,6 +80,7 @@ const CreateRide = () => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                 Authorization: `Bearer ${token}`
             },
             body: JSON.stringify(
                newRide

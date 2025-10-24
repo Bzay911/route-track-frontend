@@ -19,7 +19,7 @@ const profile = () => {
 
   return (
     <View className='flex-1 items-center justify-center'>
-      <Text className='text-red-500'>Profile, {user?.displayName}</Text>
+      <Text className='text-red-500'>Profile, {user?.email}</Text>
       <TouchableOpacity>
         <Text className='text-blue-500' onPress={handleSignOut}>Sign Out</Text>
       </TouchableOpacity>

@@ -1,16 +1,16 @@
-import RideCard from "@/components/RideCard";
+import RideCard from "@/components/rideCards/RideCard";
 import { useRide } from "@/contexts/RideContext";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
   Text,
-  View,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 
 const Rides = () => {
    const router = useRouter();
@@ -99,7 +99,7 @@ const Rides = () => {
       )}
         {/* Floating Action Button */}
       <TouchableOpacity
-        onPress={() => router.push("/protected/createRide")}
+        onPress={() => router.push("/(protected)/createRide")}
         className="absolute bottom-6 right-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
       >
         <Ionicons name="add" size={24} color="#1a1f3a" />

@@ -1,4 +1,4 @@
-import RideCard from "@/components/RideCard";
+import RideCard from "@/components/rideCards/RideCard";
 import { useRide } from "@/contexts/RideContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -136,7 +136,7 @@ export default function HomeScreen() {
 
       {rides && rides.length > 0 ? (
         <TouchableOpacity
-          onPress={() => router.push("/protected/startRide")}
+          onPress={() => router.push("/(protected)/startRide")}
           className="absolute bottom-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
           style={{ alignSelf: "center" }} // center horizontally
         >
@@ -144,7 +144,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
-          onPress={() => router.push("/protected/createRide")}
+          onPress={() => router.push("/(protected)/createRide")}
           className="absolute bottom-6 right-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
         >
           <Ionicons name="add" size={24} color="#1a1f3a" />

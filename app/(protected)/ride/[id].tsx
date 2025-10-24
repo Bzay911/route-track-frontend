@@ -1,30 +1,41 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
-import {
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useEffect, useState } from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import formatDate from "../../../utils/FormatDate";
 import formatTime from "../../../utils/FormatTime";
+import InviteButton from "../../../components/button/InviteButton";
+import { useRide } from "@/contexts/RideContext";
+import { Ride } from "@/types/ride";
+import { User } from "@/types/user";
 
 type Tab = "members" | "invite";
 
 export default function Details() {
-  const { name, description, destination, date, time } = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
   const [activeTab, setActiveTab] = useState<Tab>("members");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [email, setEmail] = useState("");
+  const { fetchRideById } = useRide();
+  const [ride, setRide] = useState<Ride | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Dummy data for demonstration
-  const members = [
-    { id: 1, name: "Mike Johnson", email: "mike32@gmail.com" },
-    { id: 2, name: "Sarah Wilson", email: "sarah.w@gmail.com" },
-  ];
+  useEffect(() => {
+    if(!id) return;
+    const fetchRideDetails = async () => {
+      setLoading(true);
+      try{
+        const data = await fetchRideById(id as string);
+        setRide(data);
+      }catch(error){
+        console.error("Error fetching ride details:", error);
+      }finally{
+        setLoading(false);
+      }
+    }
+
+    fetchRideDetails();
+  }, [id]);
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#1a1f3a" }}>
@@ -32,26 +43,26 @@ export default function Details() {
         {/* Group Details Card */}
         <View className="mx-6">
           <View className="bg-white/10 rounded-2xl p-6">
-            <Text className="text-white text-2xl font-bold mb-2">{name}</Text>
+            <Text className="text-white text-2xl font-bold mb-2">{ride?.rideName}</Text>
             <Text className="text-white/70 text-base mb-4">
-              {description || "Welcome to the group"}
+              {ride?.rideDescription || "Welcome to the group"}
             </Text>
             <View className="gap-2">
               <View className="flex-row items-center">
                 <Ionicons name="calendar-outline" size={20} color="white" />
                 <Text className="text-white/70 ml-3">
-                  {formatDate(date as string)}
+                  {formatDate(ride?.rideDate as string)}
                 </Text>
               </View>
               <View className="flex-row items-center">
                 <Ionicons name="time-outline" size={20} color="white" />
                 <Text className="text-white/70 ml-3">
-                  {formatTime(time as string)}
+                  {formatTime(ride?.rideTime as string)}
                 </Text>
               </View>
               <View className="flex-row items-center">
                 <Ionicons name="location-outline" size={20} color="white" />
-                <Text className="text-white/70 ml-3">{destination}</Text>
+                <Text className="text-white/70 ml-3">{ride?.rideDestination}</Text>
               </View>
             </View>
           </View>
@@ -95,22 +106,22 @@ export default function Details() {
           {activeTab === "members" ? (
             // Members List
             <View>
-              {members.map((member) => (
+              {ride?.riders.map((rider: User) => (
                 <View
-                  key={member.id}
+                  key={rider._id}
                   className="bg-white/10 rounded-lg p-4 mb-3 flex-row items-center justify-between"
                 >
                   <View className="flex-row items-center">
                     <View className="w-10 h-10 bg-blue-500 rounded-full items-center justify-center mr-3">
                       <Text className="text-white font-bold">
-                        {member.name.charAt(0)}
+                        {rider.email.charAt(0)}
                       </Text>
                     </View>
                     <View>
                       <Text className="text-white font-semibold">
-                        {member.name}
+                        {rider.name || "Unnamed Rider"}
                       </Text>
-                      <Text className="text-white/70">{member.email}</Text>
+                      <Text className="text-white/70">{rider.email}</Text>
                     </View>
                   </View>
                 </View>
@@ -118,23 +129,7 @@ export default function Details() {
             </View>
           ) : (
             // Invite Section
-            <View>
-              {/* Search Bar */}
-              <View className="bg-white/10 rounded-lg flex-row items-center px-4 mb-4">
-                <Ionicons name="search" size={20} color="white" />
-                <TextInput
-                  className="flex-1 py-3 px-2 text-white"
-                  placeholder="Search by name or email"
-                  placeholderTextColor="rgba(255,255,255,0.5)"
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                />
-              </View>
-           
-              <TouchableOpacity className="bg-blue-500 rounded-lg py-4 items-center mt-4">
-                <Text className="text-white font-semibold">Search Rider</Text>
-              </TouchableOpacity>
-            </View>
+            <InviteButton id={id as string} /> // sending as string for typescript compatibility
           )}
         </View>
         <View className="h-20" />

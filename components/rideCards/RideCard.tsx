@@ -3,14 +3,15 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { useRouter } from "expo-router";
 import formatDate from "@/utils/FormatDate";
 import formatTime from "@/utils/FormatTime";
+import { Ride } from "@/types/ride";
 
 // Ride Card Component
-const RideCard = ({ ride }: { ride: any }) => {
+const RideCard = ({ ride }: { ride: Ride }) => {
   const router = useRouter();
 
   const handleRidePress = (ride: any) => {
     router.push({
-      pathname: "/protected/ride/[id]",
+      pathname: "/(protected)/ride/[id]",
       params: {
         id: ride._id,
         name: ride.rideName,
@@ -18,6 +19,7 @@ const RideCard = ({ ride }: { ride: any }) => {
         destination: ride.rideDestination,
         date: ride.rideDate,
         time: ride.rideTime,
+        riders: JSON.stringify(ride.riders)
       },
     });
   };
@@ -62,7 +64,7 @@ const RideCard = ({ ride }: { ride: any }) => {
         <View className="flex-row justify-end items-center">
           <Ionicons name="bicycle-outline" size={16} color="white" />
           <Text className="text-white/70 ml-2">
-            {ride.participants?.length || 0} riders
+            {ride.riders.length || 0} riders
           </Text>
         </View>
       </TouchableOpacity>
