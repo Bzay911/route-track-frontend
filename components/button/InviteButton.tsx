@@ -72,8 +72,7 @@ const InviteButton: React.FC<InviteButtonProps> = ({id}) => {
       };
       
   return (
-    <SafeAreaView>
-      <View style={styles.inviteSection}>
+      <View>
         <View style={styles.titleContainer}>
           <Text style={styles.sectionTitle}>Invite Rider</Text>
           <TouchableOpacity 
@@ -102,7 +101,6 @@ const InviteButton: React.FC<InviteButtonProps> = ({id}) => {
           </Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
   )
 }
 const styles = StyleSheet.create({
@@ -117,9 +115,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         textAlign: "center",
         padding: 8,
-      },
-      inviteSection: {
-        padding: 16,
       },
       emailInput: {
         borderWidth: 1,

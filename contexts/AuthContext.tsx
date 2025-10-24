@@ -2,14 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { API_BASE_URL } from '../config/apiConfig';
 import { Alert } from 'react-native';
+import { User } from '@/types/user';
 
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  displayName?: string;
-}
 
 interface AuthContextType {
   token: string | null;

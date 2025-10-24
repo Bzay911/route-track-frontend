@@ -5,10 +5,12 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import formatDate from "../../../utils/FormatDate";
 import formatTime from "../../../utils/FormatTime";
-import InviteButton from "../../../components/button/InviteButton";
 import { useRide } from "@/contexts/RideContext";
 import { Ride } from "@/types/ride";
 import { User } from "@/types/user";
+import InviteButton from "@/components/button/InviteButton";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "expo-router";
 
 type Tab = "members" | "invite";
 
@@ -18,24 +20,57 @@ export default function Details() {
   const { fetchRideById } = useRide();
   const [ride, setRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
-    if(!id) return;
+    if (!id) return;
+
     const fetchRideDetails = async () => {
       setLoading(true);
-      try{
+      try {
         const data = await fetchRideById(id as string);
         setRide(data);
-      }catch(error){
+      } catch (error) {
         console.error("Error fetching ride details:", error);
-      }finally{
+      } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchRideDetails();
   }, [id]);
 
+  useEffect(() => {
+    if (ride?.createdby && user?._id) {
+      setIsAdmin(ride.createdby.toString() === user._id.toString());
+    }
+  }, [ride, user]);
+
+  if (loading) {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#1a1f3a",
+        }}
+      >
+        <Text className="text-white">Loading...</Text>
+      </SafeAreaView>
+    );
+  }
+
+    const handleRidePress = (ride: any) => {
+    router.push({
+      pathname: "/startRide",
+      params: {
+        id: ride._id,
+      },
+    });
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#1a1f3a" }}>
@@ -43,7 +78,9 @@ export default function Details() {
         {/* Group Details Card */}
         <View className="mx-6">
           <View className="bg-white/10 rounded-2xl p-6">
-            <Text className="text-white text-2xl font-bold mb-2">{ride?.rideName}</Text>
+            <Text className="text-white text-2xl font-bold mb-2">
+              {ride?.rideName}
+            </Text>
             <Text className="text-white/70 text-base mb-4">
               {ride?.rideDescription || "Welcome to the group"}
             </Text>
@@ -62,7 +99,9 @@ export default function Details() {
               </View>
               <View className="flex-row items-center">
                 <Ionicons name="location-outline" size={20} color="white" />
-                <Text className="text-white/70 ml-3">{ride?.rideDestination}</Text>
+                <Text className="text-white/70 ml-3">
+                  {ride?.rideDestination}
+                </Text>
               </View>
             </View>
           </View>
@@ -72,67 +111,85 @@ export default function Details() {
         <View className="flex-row mx-6 mt-8 mb-4 bg-white/5 rounded-2xl overflow-hidden">
           <TouchableOpacity
             onPress={() => setActiveTab("members")}
-            className={`flex-1 py-2 ${
-              activeTab === "members" ? "bg-blue-500" : "bg-transparent"
-            }`}
+            className={`flex-1 py-2 ${activeTab === "members" ? "bg-blue-500" : "bg-transparent"}`}
           >
             <Text
-              className={`text-center font-semibold ${
-                activeTab === "members" ? "text-white" : "text-white/70"
-              }`}
+              className={`text-center font-semibold ${activeTab === "members" ? "text-white" : "text-white/70"}`}
             >
-              Members
+              Riders
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => setActiveTab("invite")}
-            className={`flex-1 py-2 ${
-              activeTab === "invite" ? "bg-blue-500" : "bg-transparent"
-            }`}
+            className={`flex-1 py-2 ${activeTab === "invite" ? "bg-blue-500" : "bg-transparent"}`}
           >
             <Text
-              className={`text-center font-semibold ${
-                activeTab === "invite" ? "text-white" : "text-white/70"
-              }`}
+              className={`text-center font-semibold ${activeTab === "invite" ? "text-white" : "text-white/70"}`}
             >
               Invite
             </Text>
           </TouchableOpacity>
         </View>
 
-        {/* Search and Content */}
+        {/* Tabs Data Rendering */}
         <View className="mx-6 mt-4">
           {activeTab === "members" ? (
-            // Members List
             <View>
-              {ride?.riders.map((rider: User) => (
-                <View
-                  key={rider._id}
-                  className="bg-white/10 rounded-lg p-4 mb-3 flex-row items-center justify-between"
-                >
-                  <View className="flex-row items-center">
-                    <View className="w-10 h-10 bg-blue-500 rounded-full items-center justify-center mr-3">
-                      <Text className="text-white font-bold">
-                        {rider.email.charAt(0)}
-                      </Text>
+              {ride?.riders.map((rider: User) => {
+                const isRiderAdmin = rider._id === ride.createdby;
+
+                return (
+                  <View
+                    key={rider._id}
+                    className="bg-white/10 rounded-lg p-4 mb-3 flex-row items-center justify-between relative"
+                  >
+                    <View className="flex-row items-center">
+                      <View className="w-10 h-10 bg-blue-500 rounded-full items-center justify-center mr-3">
+                        <Text className="text-white font-bold">
+                          {rider.email.charAt(0)}
+                        </Text>
+                      </View>
+                      <View>
+                        <Text className="text-white font-semibold">
+                          {rider.displayName || "Unnamed Rider"}
+                        </Text>
+                        <Text className="text-white/70">{rider.email}</Text>
+                      </View>
                     </View>
-                    <View>
-                      <Text className="text-white font-semibold">
-                        {rider.name || "Unnamed Rider"}
-                      </Text>
-                      <Text className="text-white/70">{rider.email}</Text>
-                    </View>
+
+                    {/* Admin badge */}
+                    {isRiderAdmin && (
+                      <View className="bg-green-600 px-3 py-1 rounded-full absolute top-0 right-0 m-2">
+                        <Text className="text-white text-xs">Admin</Text>
+                      </View>
+                    )}
                   </View>
-                </View>
-              ))}
+                );
+              })}
+
+                {/* If admin show start ride else show join ride  */}
+              {isAdmin ? (
+                <TouchableOpacity
+                  style={{ backgroundColor: "#ff6b36" }}
+                  className="rounded-xl py-4 items-center mt-4"
+                  onPress={() => handleRidePress(ride)}
+                >
+                  <Text className="text-white font-semibold">Start Ride</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  style={{ backgroundColor: "#ff6b36" }}
+                  className="rounded-xl py-4 items-center mt-4"
+                >
+                  <Text className="text-white font-semibold">Join Ride</Text>
+                </TouchableOpacity>
+              )}
             </View>
           ) : (
-            // Invite Section
-            <InviteButton id={id as string} /> // sending as string for typescript compatibility
+            <InviteButton id={id as string} />
           )}
         </View>
-        <View className="h-20" />
       </ScrollView>
     </SafeAreaView>
   );

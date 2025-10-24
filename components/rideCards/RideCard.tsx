@@ -14,12 +14,6 @@ const RideCard = ({ ride }: { ride: Ride }) => {
       pathname: "/(protected)/ride/[id]",
       params: {
         id: ride._id,
-        name: ride.rideName,
-        description: ride.rideDescription,
-        destination: ride.rideDestination,
-        date: ride.rideDate,
-        time: ride.rideTime,
-        riders: JSON.stringify(ride.riders)
       },
     });
   };

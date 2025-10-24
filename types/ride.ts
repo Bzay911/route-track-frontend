@@ -8,6 +8,6 @@ export interface Ride {
   rideDate?: string;
   rideTime: string;
   riders: User[];
-  createdBy?: string;
+  createdby?: string;
   createdAt: string;
 }

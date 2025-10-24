@@ -1,24 +1,42 @@
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { Camera, MapView } from "@maplibre/maplibre-react-native";
-import { useRouter } from "expo-router";
-import { useRef } from "react";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRef, useEffect, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LobbyRiderCard from "../../components/rideCards/LobbyRiderCard";
+import { Ride } from "@/types/ride";
+import { useRide } from "@/contexts/RideContext";
 
 const StartRide = () => {
   const router = useRouter();
+  const { id } = useLocalSearchParams();
+  const { fetchRideById } = useRide();
+  const [ride, setRide] = useState<Ride | null>(null);
+  const [loading, setLoading] = useState(true);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const MAPTILER_API_KEY = "wcwJKGSwv6WL0HEGTdyN";
 
-  const dummyRiders = [
-    { id: "1", name: "Alice Johnson", estimatedDistance: "2.5 km", estimatedTime: "5 min" },
-    { id: "2", name: "Bob Smith", estimatedDistance: "4.2 km", estimatedTime: "10 min" },
-    { id: "3", name: "Charlie Lee", estimatedDistance: "1.8 km", estimatedTime: "4 min" },
-    { id: "4", name: "Diana Wang", estimatedDistance: "3.0 km", estimatedTime: "7 min" },
-  ];
+  const MAPTILER_API_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY;
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchRideDetails = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchRideById(id as string);
+        setRide(data);
+      } catch (error) {
+        console.error("Error fetching ride details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRideDetails();
+  }, [id]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -41,13 +59,42 @@ const StartRide = () => {
             />
           </MapView>
 
-          {/* Back button on top of map */}
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="absolute top-5 left-3 z-10 bg-white rounded-full p-2 shadow"
-          >
-            <Ionicons name="arrow-back" size={24} color="black" />
-          </TouchableOpacity>
+          {/* Top Overlay */}
+          <View className="absolute top-4 left-0 right-0 px-4 flex-row items-center justify-between">
+            {/* Back Button */}
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="bg-white rounded-full p-3 shadow-md"
+              style={{
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.25,
+                shadowRadius: 3.84,
+                elevation: 5,
+              }}
+            >
+              <Ionicons name="arrow-back" size={24} color="black" />
+            </TouchableOpacity>
+
+            {/* Destination Card */}
+            <View
+              className="bg-white flex-row flex-1 ml-4 p-3 rounded-full gap-4 items-center"
+              style={{
+                shadowColor: "#000",
+                shadowOpacity: 0.1,
+                shadowRadius: 3,
+                elevation: 5,
+              }}
+            >
+              <Ionicons name="location-outline" size={16} color="black" />
+              <Text
+                className="text-lg font-semibold text-black"
+                numberOfLines={1}
+              >
+                {ride?.rideDestination || "Destination"}
+              </Text>
+            </View>
+          </View>
         </View>
 
         {/* Bottom Sheet */}
@@ -62,11 +109,9 @@ const StartRide = () => {
               <Text className="text-2xl font-bold">Ready to Ride?</Text>
               <Text className="text-lg my-4">Riders Status</Text>
               <FlatList
-                data={dummyRiders}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <LobbyRiderCard {...item} />
-                )}
+                data={ride?.riders || []}
+                keyExtractor={(item) => item._id}
+                renderItem={({ item }) => <LobbyRiderCard {...item} />}
                 ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
               />
             </View>
