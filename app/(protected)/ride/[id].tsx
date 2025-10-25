@@ -183,18 +183,40 @@ export default function Details() {
 
               {/* If admin show start ride else show join ride  */}
               {isAdmin ? (
-                <TouchableOpacity
-                  style={{ backgroundColor: "#ff6b36" }}
-                  className="rounded-xl py-4 items-center mt-4"
-                  onPress={() => {
-                    if (ride) {
-                      handleRidePress(ride);
-                    }
-                  }}
-                >
-                  <Text className="text-white font-semibold">Start Ride</Text>
-                </TouchableOpacity>
+                ride?.riders.length === 1 ? (
+                  // Only admin is in the ride
+                  <View className="bg-white/10 rounded-2xl p-6 items-center shadow-lg w-full max-w-sm mt-6">
+ 
+                    {/* Navigate to Invite Button */}
+                    <TouchableOpacity
+                      onPress={() => setActiveTab("invite")}
+                      className="bg-yellow-500 rounded-lg py-3 px-6 mb-4 w-full items-center"
+                      activeOpacity={0.8}
+                    >
+                      <Text className="text-white font-semibold text-lg">
+                        Invite Members
+                      </Text>
+                    </TouchableOpacity>
+
+                    {/* Info Text */}
+                    <Text className="text-center text-gray-300 text-base leading-relaxed">
+                      Invite some members first to begin the ride!
+                    </Text>
+                  </View>
+                ) : (
+                  // Admin + other riders
+                  <TouchableOpacity
+                    style={{ backgroundColor: "#ff6b36" }}
+                    className="rounded-xl py-4 items-center mt-4"
+                    onPress={() => {
+                      if (ride) handleRidePress(ride);
+                    }}
+                  >
+                    <Text className="text-white font-semibold">Start Ride</Text>
+                  </TouchableOpacity>
+                )
               ) : (
+                // Non-admin
                 <TouchableOpacity
                   style={{ backgroundColor: "#ff6b36" }}
                   className="rounded-xl py-4 items-center mt-4"

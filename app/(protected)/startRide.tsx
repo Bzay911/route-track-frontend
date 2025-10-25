@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import { Camera, MapView } from "@maplibre/maplibre-react-native";
+import { CameraRef, Camera, MapView } from "@maplibre/maplibre-react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useRef, useEffect, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
@@ -9,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import LobbyRiderCard from "../../components/rideCards/LobbyRiderCard";
 import { Ride } from "@/types/ride";
 import { useRide } from "@/contexts/RideContext";
+import getUserLocation from "@/utils/GetUserLocation";
 
 const StartRide = () => {
   const router = useRouter();
@@ -17,6 +18,10 @@ const StartRide = () => {
   const [ride, setRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(true);
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const Coogee_lat = "-32.1174";
+  const Coogee_lon = "115.7628";
+  const userLocation = getUserLocation();
+  const cameraRef = useRef<CameraRef>(null);
 
   const MAPTILER_API_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY;
 
@@ -50,10 +55,13 @@ const StartRide = () => {
             rotateEnabled
             pitchEnabled
             zoomEnabled
+            compassEnabled={false}
           >
             <Camera
+              ref={cameraRef}
               defaultSettings={{
-                centerCoordinate: [115.8605, -31.9505], // Perth
+                // centerCoordinate: [115.8605, -31.9505], // Perth
+                centerCoordinate: [138.6007, -34.9285], // adelaide
                 zoomLevel: 9,
               }}
             />
@@ -95,6 +103,23 @@ const StartRide = () => {
               </Text>
             </View>
           </View>
+
+          {/* floating buttons */}
+          <TouchableOpacity
+            onPress={() => {
+              if (userLocation) {
+                cameraRef.current?.setCamera({
+                  centerCoordinate: [userLocation.lon, userLocation.lat],
+                  zoomLevel: 14,
+                  animationDuration: 1000,
+                  animationMode: "flyTo",
+                });
+              }
+            }}
+            className="absolute bottom-[22%] z-30 right-4 w-14 h-14 rounded-full bg-orange-600 justify-center items-center shadow-lg"
+          >
+            <Ionicons name="locate" size={28} color="white" />
+          </TouchableOpacity>
         </View>
 
         {/* Bottom Sheet */}
@@ -121,6 +146,9 @@ const StartRide = () => {
               style={{ backgroundColor: "#ff6b36" }}
             >
               <Text className="font-semibold text-white">I'm Ready</Text>
+            </TouchableOpacity>
+            <TouchableOpacity className="p-6 rounded-2xl bg-yellow-500 items-center justify-center mx-6 mt-4">
+              <Text className="font-semibold text-white">Start Ride</Text>
             </TouchableOpacity>
           </BottomSheetView>
         </BottomSheet>
