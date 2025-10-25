@@ -1,13 +1,47 @@
 import RideCard from "@/components/rideCards/RideCard";
 import { useRide } from "@/contexts/RideContext";
+import { Ride } from "@/types/ride";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import {
+  FlatList,
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+  Alert,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import hasRideStarted from "@/utils/HasRideStarted";
 
 export default function HomeScreen() {
   const router = useRouter();
   const { rides } = useRide();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // checking if the started time has arrived yet
+  const handleRidePress = (ride: Ride) => {
+    // if not show alert
+    if (!hasRideStarted(ride)) {
+      Alert.alert(
+        "Ride has not started yet",
+        "The scheduled start time hasn't arrived. Do you want to start anyway?",
+        [
+          { text: "Wait", style: "cancel" },
+          {
+            text: "Start anyway",
+            onPress: () => router.push(`/startRide?id=${ride._id}`),
+          },
+        ]
+      );
+    } else {
+      // if yes proceed to the lobby
+      router.push(`/startRide?id=${ride._id}`);
+    }
+  };
 
   // Clone and sort safely
   const sortedRides = [...(rides || [])].sort((a, b) => {
@@ -131,12 +165,46 @@ export default function HomeScreen() {
           </View>
         )}
 
+        {/* Modal */}
+        <Modal transparent visible={modalVisible} animationType="slide">
+          <View className="flex-1 items-center justify-center bg-black/50">
+            <View className="bg-white rounded-2xl w-4/5 p-5">
+              <Text className="text-lg font-bold mb-3">
+                Select a ride you want to start
+              </Text>
+
+              <FlatList
+                data={rides}
+                keyExtractor={(ride) => ride._id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    className="py-3 border-b border-gray-200"
+                    onPress={() => handleRidePress(item)}
+                  >
+                    <Text className="text-base">{item.rideName}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+
+              {/* Close button */}
+              <Pressable
+                className="mt-4 bg-red-500 py-2 rounded-xl"
+                onPress={() => setModalVisible(false)}
+              >
+                <Text className="text-white text-center font-medium">
+                  Close
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
         <View className="h-20" />
       </ScrollView>
 
       {rides && rides.length > 0 ? (
         <TouchableOpacity
-          onPress={() => router.push("/(protected)/startRide")}
+          // onPress={() => router.push("/(protected)/startRide")}
+          onPress={() => setModalVisible(true)}
           className="absolute bottom-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
           style={{ alignSelf: "center" }} // center horizontally
         >

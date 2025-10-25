@@ -16,20 +16,22 @@ const LobbyRiderCard = (rider: any) => {
         {/* Name and Details */}
         <View className="flex-1">
           {/* Name Row */}
-          <Text className="text-gray-900 text-lg font-semibold mb-1">
+          <Text className="text-gray-900 text-medium font-semibold mb-1">
             {rider.email}
           </Text>
 
           {/* Distance and ETA Row */}
-          {/* <View className="flex-row items-center">
+          <View className="flex-row items-center">
             <Text className="text-gray-600 text-sm">
-              {rider.estimatedDistance}
+              {/* {rider.estimatedDistance} */}
+              16km
             </Text>
             <Text className="text-gray-400 mx-2">•</Text>
             <Text className="text-gray-600 text-sm">
-              {rider.estimatedTime}
+              {/* {rider.estimatedTime} */}
+              32 mins
             </Text>
-          </View> */}
+          </View>
         </View>
       </View>
 

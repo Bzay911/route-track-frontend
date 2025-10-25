@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import formatDate from "../../../utils/FormatDate";
 import formatTime from "../../../utils/FormatTime";
@@ -11,6 +11,7 @@ import { User } from "@/types/user";
 import InviteButton from "@/components/button/InviteButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
+import hasRideStarted from "@/utils/HasRideStarted";
 
 type Tab = "members" | "invite";
 
@@ -63,13 +64,25 @@ export default function Details() {
     );
   }
 
-    const handleRidePress = (ride: any) => {
-    router.push({
-      pathname: "/startRide",
-      params: {
-        id: ride._id,
-      },
-    });
+  // checking if the started time has arrived yet
+  const handleRidePress = (ride: Ride) => {
+    // if not show alert
+    if (!hasRideStarted(ride)) {
+      Alert.alert(
+        "Ride has not started yet",
+        "The scheduled start time hasn't arrived. Do you want to start anyway?",
+        [
+          { text: "Wait", style: "cancel" },
+          {
+            text: "Start anyway",
+            onPress: () => router.push(`/startRide?id=${ride._id}`),
+          },
+        ]
+      );
+    } else {
+      // if yes proceed to the lobby
+      router.push(`/startRide?id=${ride._id}`);
+    }
   };
 
   return (
@@ -168,12 +181,16 @@ export default function Details() {
                 );
               })}
 
-                {/* If admin show start ride else show join ride  */}
+              {/* If admin show start ride else show join ride  */}
               {isAdmin ? (
                 <TouchableOpacity
                   style={{ backgroundColor: "#ff6b36" }}
                   className="rounded-xl py-4 items-center mt-4"
-                  onPress={() => handleRidePress(ride)}
+                  onPress={() => {
+                    if (ride) {
+                      handleRidePress(ride);
+                    }
+                  }}
                 >
                   <Text className="text-white font-semibold">Start Ride</Text>
                 </TouchableOpacity>
