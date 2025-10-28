@@ -15,13 +15,15 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRide } from "../../contexts/RideContext";
 import { useAuth } from "@/contexts/AuthContext";
+import AutoCompleteTextField from "@/components/textField/AutoCompleteTextField";
 
 const CreateRide = () => {
   const [rideName, setRideName] = useState("");
-  const [destination, setDestination] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<Date | null>(null);
   const [description, setDescription] = useState("");
+  const [destinationCoords, setDestinationCoords] = useState<[number, number] | null>(null);
+  const [destinationName, setDestinationName] = useState(""); 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +34,6 @@ const CreateRide = () => {
   const handleDateChange = (event: any, date?: Date) => {
     setShowDatePicker(false);
     if (date) {
-      // Store the Date object directly - no conversion needed!
       setSelectedDate(date);
     }
   };
@@ -40,7 +41,6 @@ const CreateRide = () => {
   const handleTimeChange = (event: any, time?: Date) => {
     setShowTimePicker(false);
     if (time) {
-      // Store the Date object directly - no conversion needed!
       setSelectedTime(time);
     }
   };
@@ -52,7 +52,7 @@ const CreateRide = () => {
         return;
     }
     
-    if (!destination.trim()) {
+    if (!destinationCoords) {
         Alert.alert("Error", "Please enter a destination");
         return;
     }
@@ -71,7 +71,8 @@ const CreateRide = () => {
         setIsLoading(true);
         const newRide = {
            rideName,
-                destination,
+                destinationCoords,
+                destinationName,
                 selectedDate: selectedDate?.toISOString(),
                 selectedTime: selectedTime?.toISOString(),
                 description
@@ -100,6 +101,7 @@ const CreateRide = () => {
     }
   }
 
+
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: "#1a1f3a" }}>
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
@@ -122,15 +124,9 @@ const CreateRide = () => {
           <Text className="text-white text-base font-medium mb-3">
             Destination
           </Text>
-          <TextInput
-            value={destination}
-            onChangeText={setDestination}
-            placeholder="e.g. Pacific Coast Highway"
-            placeholderTextColor="#9CA3AF"
-            className="bg-white/10 border border-white/20 rounded-xl px-4 py-4 text-white text-base"
-          />
+             <AutoCompleteTextField setDestinationCoords={setDestinationCoords} setDestinationName={setDestinationName}/>
         </View>
-
+      
         {/* Date Input */}
         <View className="mb-6">
           <Text className="text-white text-base font-medium mb-3">Date</Text>
