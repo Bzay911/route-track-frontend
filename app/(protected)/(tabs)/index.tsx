@@ -16,11 +16,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import hasRideStarted from "@/utils/HasRideStarted";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function HomeScreen() {
   const router = useRouter();
   const { rides } = useRide();
   const [modalVisible, setModalVisible] = useState(false);
+  const {user} = useAuth();
 
   // checking if the started time has arrived yet
   const handleRidePress = (ride: Ride) => {
@@ -71,12 +73,12 @@ export default function HomeScreen() {
         style={{ backgroundColor: "#1a1f3a" }}
       >
         <View className="w-12 h-12 bg-white/20 rounded-full items-center justify-center">
-          <Text className="text-white text-lg font-semibold">A</Text>
+          <Text className="text-white text-lg font-semibold">{user?.displayName.charAt(0) || user?.email.charAt(0)}</Text>
         </View>
 
         <View className="flex-1 items-center">
-          <Text className="text-white/70 text-lg">Good morning</Text>
-          <Text className="text-white text-lg font-semibold">Alex</Text>
+          <Text className="text-white/70 text-lg">Welcome</Text>
+          <Text className="text-white text-lg font-semibold">{user?.displayName || "User"}</Text>
         </View>
 
         <TouchableOpacity className="p-2">
@@ -145,7 +147,10 @@ export default function HomeScreen() {
             </View>
           </View>
         ) : (
-          <Text className="text-white/70">No upcoming rides</Text>
+           <View className="bg-white/10 mx-6 rounded-2xl p-6 mb-4 border border-white/20">
+            <Text className="text-white/70 text-center">No upcoming rides found</Text>
+            <Text className="text-white/70 text-center mt-6">Create one or join one to continue !</Text>
+          </View>
         )}
 
         {/* Upcoming Rides Section */}

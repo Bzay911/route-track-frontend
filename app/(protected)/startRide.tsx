@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import {
-  CameraRef,
   Camera,
   MapView,
   ShapeSource,
@@ -22,146 +21,76 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import LobbyRiderCard from "../../components/rideCards/LobbyRiderCard";
 import { Ride } from "@/types/ride";
 import { useRide } from "@/contexts/RideContext";
-import getUserLocation from "@/utils/GetUserLocation";
+import {
+  initRideSocket,
+  getSocket,
+  disconnectSocket,
+} from "@/sockets/rideSockets";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRoute } from "@/contexts/RouteContext";
+import getUserLocation from "../../utils/GetUserLocation";
+import FormatDistance from "@/utils/FormatDistance";
+import FormatDuration from "@/utils/FormatDuration";
 
 const StartRide = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams();
+  const { user } = useAuth();
   const { fetchRideById } = useRide();
-  const [ride, setRide] = useState<Ride | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [routeGeoJSON, setRouteGeoJSON] = useState<any>(null);
-  const [isLoadingRoute, setIsLoadingRoute] = useState(false); 
-  const [routeInfo, setRouteInfo] = useState<{
-    distance: number;
-    duration: number;
-  } | null>(null); // NEW - Route info
-  const bottomSheetRef = useRef<BottomSheet>(null);
-  const cameraRef = useRef<CameraRef>(null);
+  const { routeGeoJSON, routeInfo, fetchRoute, isLoadingRoute, cameraRef } = useRoute();
   const userLocation = getUserLocation();
+  const [ride, setRide] = useState<Ride | null>(null);
+  const bottomSheetRef = useRef<BottomSheet>(null);
 
   const MAPTILER_API_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY;
 
-  // Helper function to convert meters to km
-  const formatDistance = (meters: number) => {
-    return (meters / 1000).toFixed(1) + " km";
-  };
+  // checking if admin
+  const isAdmin = ride?.createdby?.toString() === user?._id;
 
-  // Helper function to convert seconds to minutes
-  const formatDuration = (seconds: number) => {
-    const minutes = Math.round(seconds / 60);
-    return minutes + " min";
-  };
+  const currentRider = ride?.riders?.find((r) => r.user._id === user?._id);
+  const isReady = currentRider?.ready;
 
-  // function to fetch the routes using OSRM
-  const getRoute = async (start: [number, number], end: [number, number]) => {
-    try {
-      console.log("Fetching route from:", start, "to:", end);
+  useEffect(() => {
+    if (!userLocation || !ride || routeGeoJSON) return;
 
-      const response = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${start[0]},${start[1]};${end[0]},${end[1]}?overview=full&geometries=geojson`
-      );
-
-      const data = await response.json();
-      console.log("Route response: ", data);
-
-      if (data.routes && data.routes.length > 0) {
-        const route = data.routes[0];
-        console.log(
-          "Route found! Distance: ",
-          route.distance,
-          "meters, Duration:",
-          route.duration,
-          "seconds"
-        );
-
-        // Return both geometry and metadata
-        return {
-          geometry: route.geometry,
-          distance: route.distance, // in meters
-          duration: route.duration, // in seconds
-        };
-      }
-      console.log("No routes found");
-      return null;
-    } catch (error) {
-      console.error("Error fetching route: ", error);
-      return null;
-    }
-  };
+    const destination: [number, number] = ride.destinationCoords || [
+      115.7628, -32.1174,
+    ];
+    fetchRoute([userLocation.lon, userLocation.lat], destination);
+  }, [userLocation, ride]);
 
   // useEffect to get ride details by id
   useEffect(() => {
     if (!id) return;
 
     const fetchRideDetails = async () => {
-      setLoading(true);
       try {
         const data = await fetchRideById(id as string);
         setRide(data);
       } catch (error) {
         console.error("Error fetching ride details:", error);
       } finally {
-        setLoading(false);
       }
     };
 
     fetchRideDetails();
   }, [id]);
 
-  // useeffect to fetch route once user location has been granted
+  // useEffect for socket
   useEffect(() => {
-    // Guard conditions - don't fetch if already loading or have route
-    if (!userLocation || isLoadingRoute || routeGeoJSON) {
-      console.log("Skipping route fetch:", {
-        hasLocation: !!userLocation,
-        isLoading: isLoadingRoute,
-        hasRoute: !!routeGeoJSON,
-      });
-      return;
-    }
+    if (!id) return;
+    const socket = initRideSocket(id as string);
 
-    const destinationCoordinates: [number, number] = [115.7628, -32.1174]; // Coogee
-    const userConstantLocation: [number, number] = [115.8569088, -32.0067822];
-    console.log("User location available, fetching route...");
+    // Listen for updates
+    socket.on("updatedRidersStatus", (updatedRiders: any[]) => {
+      setRide((prev) => (prev ? { ...prev, riders: updatedRiders } : prev));
+    });
 
-    setIsLoadingRoute(true); // Show loading indicator
-    const fetchRoute = async () => {
-
-      try {
-        const routeData = await getRoute(
-          // [userLocation.lon, userLocation.lat],
-          userConstantLocation,
-          destinationCoordinates
-        );
-
-        if (routeData) {
-          setRouteGeoJSON(routeData.geometry);
-          setRouteInfo({
-            distance: routeData.distance,
-            duration: routeData.duration,
-          });
-          console.log("Route saved, ready to draw on map!");
-
-          // camera to show entire route after a short delay
-          setTimeout(() => {
-            cameraRef.current?.fitBounds(
-              [userLocation.lon, userLocation.lat], // Start point
-              destinationCoordinates, // End point
-              [50, 50, 50, 250], // Padding: [top, right, bottom, left]
-              1000 // Animation duration in ms
-            );
-          }, 500);
-        }
-      } catch (error) {
-        console.error("Failed to fetch route:", error);
-      } finally {
-        setIsLoadingRoute(false); // Hide loading indicator
-      }
+    return () => {
+      disconnectSocket();
     };
+  }, [id]);
 
-    fetchRoute();
-  }, [userLocation]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -242,7 +171,7 @@ const StartRide = () => {
                 type: "Feature",
                 geometry: {
                   type: "Point",
-                  coordinates: [115.7628, -32.1174], // Coogee
+                  coordinates: ride?.destinationCoords || [115.7628, -32.1174], // else fallback to coogee
                 },
                 properties: {},
               }}
@@ -310,14 +239,14 @@ const StartRide = () => {
               <View className="flex-row items-center gap-1">
                 <Ionicons name="car-outline" size={16} color="#ff6b36" />
                 <Text className="text-sm font-semibold text-gray-700">
-                  {formatDistance(routeInfo.distance)}
+                  {FormatDistance(routeInfo.distance)}
                 </Text>
               </View>
               <View className="w-px h-4 bg-gray-300" />
               <View className="flex-row items-center gap-1">
                 <Ionicons name="time-outline" size={16} color="#ff6b36" />
                 <Text className="text-sm font-semibold text-gray-700">
-                  {formatDuration(routeInfo.duration)}
+                  {FormatDuration(routeInfo.duration)}
                 </Text>
               </View>
             </View>
@@ -370,8 +299,22 @@ const StartRide = () => {
         >
           <BottomSheetView className="flex-1">
             <View className="p-4">
-              <Text className="text-2xl font-bold">Ready to Ride?</Text>
-              <Text className="text-lg my-4">Riders Status</Text>
+              <View className="flex-row items-center justify-between">
+                <View>
+                  <Text className="text-2xl font-bold">Ready to Ride?</Text>
+                  <Text className="text-lg my-4">Riders Status</Text>
+                </View>
+                {isAdmin && (
+                  <TouchableOpacity
+                    className="py-6 px-4 rounded-2xl bg-green-600 items-center justify-center mb-4"
+                    onPress={() =>
+                      router.replace("/(protected)/liveRideScreen")
+                    }
+                  >
+                    <Text className="font-semibold text-white">Start Ride</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
               <FlatList
                 data={ride?.riders || []}
                 keyExtractor={(item) => item._id}
@@ -382,12 +325,29 @@ const StartRide = () => {
 
             <TouchableOpacity
               className="p-6 rounded-2xl items-center justify-center mx-6 mt-4"
-              style={{ backgroundColor: "#ff6b36" }}
+              style={{
+                backgroundColor: isReady ? "#ff6b36" : "#22c55e",
+              }}
+              onPress={() => {
+                const socket = getSocket();
+
+                if (currentRider?.ready) {
+                  console.log("making them not ready");
+                  socket.emit("riderNotReady", {
+                    rideId: ride?._id,
+                    userId: user?._id,
+                  });
+                } else {
+                  socket.emit("riderReady", {
+                    rideId: ride?._id,
+                    userId: user?._id,
+                  });
+                }
+              }}
             >
-              <Text className="font-semibold text-white">I'm Ready</Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="p-6 rounded-2xl bg-yellow-500 items-center justify-center mx-6 mt-4">
-              <Text className="font-semibold text-white">Start Ride</Text>
+              <Text className="font-semibold text-white">
+                {isReady ? "Not ready " : " I'm Ready"}
+              </Text>
             </TouchableOpacity>
           </BottomSheetView>
         </BottomSheet>

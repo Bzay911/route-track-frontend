@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, Text } from 'react-native';
 
 const LobbyRiderCard = (rider: any) => {
@@ -9,7 +8,7 @@ const LobbyRiderCard = (rider: any) => {
         {/* Avatar */}
         <View className="bg-cyan-400 rounded-full w-12 h-12 items-center justify-center mr-4">
           <Text className="text-xl font-bold">
-            {rider.email?.charAt(0).toUpperCase() || 'U'}
+            {rider.user.email?.charAt(0).toUpperCase() || 'U'}
           </Text>
         </View>
 
@@ -17,27 +16,31 @@ const LobbyRiderCard = (rider: any) => {
         <View className="flex-1">
           {/* Name Row */}
           <Text className="text-gray-900 text-medium font-semibold mb-1">
-            {rider.email}
+            {rider.user.email}
           </Text>
 
           {/* Distance and ETA Row */}
           <View className="flex-row items-center">
-            <Text className="text-gray-600 text-sm">
-              {/* {rider.estimatedDistance} */}
-              16km
-            </Text>
+            <Text className="text-gray-600 text-sm">16km</Text>
             <Text className="text-gray-400 mx-2">•</Text>
-            <Text className="text-gray-600 text-sm">
-              {/* {rider.estimatedTime} */}
-              32 mins
-            </Text>
+            <Text className="text-gray-600 text-sm">32 mins</Text>
           </View>
         </View>
       </View>
 
       {/* Right Section: Status Badge */}
-      <View className="bg-gray-200 rounded-full px-4 py-2">
-        <Text className="text-gray-600 text-sm">Not Ready</Text>
+      <View
+        className={`rounded-full px-4 py-2 ${
+          rider.ready ? 'bg-green-500' : 'bg-gray-200'
+        }`}
+      >
+        <Text
+          className={`text-sm ${
+            rider.ready ? 'text-white' : 'text-gray-600'
+          }`}
+        >
+          {rider.ready ? 'Ready' : 'Not Ready'}
+        </Text>
       </View>
     </View>
   );

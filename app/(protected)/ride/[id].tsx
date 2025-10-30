@@ -7,7 +7,6 @@ import formatDate from "../../../utils/FormatDate";
 import formatTime from "../../../utils/FormatTime";
 import { useRide } from "@/contexts/RideContext";
 import { Ride } from "@/types/ride";
-import { User } from "@/types/user";
 import InviteButton from "@/components/button/InviteButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
@@ -42,6 +41,8 @@ export default function Details() {
 
     fetchRideDetails();
   }, [id]);
+
+  // console.log('ride', ride)
 
   useEffect(() => {
     if (ride?.createdby && user?._id) {
@@ -149,8 +150,9 @@ export default function Details() {
         <View className="mx-6 mt-4">
           {activeTab === "members" ? (
             <View>
-              {ride?.riders.map((rider: User) => {
-                const isRiderAdmin = rider._id === ride.createdby;
+              {ride?.riders.map((rider: any) => {
+                const riderUser = rider.user;
+                const isRiderAdmin = riderUser._id === ride.createdby;
 
                 return (
                   <View
@@ -160,14 +162,14 @@ export default function Details() {
                     <View className="flex-row items-center">
                       <View className="w-10 h-10 bg-blue-500 rounded-full items-center justify-center mr-3">
                         <Text className="text-white font-bold">
-                          {rider.email.charAt(0)}
+                          {riderUser.email.charAt(0)}
                         </Text>
                       </View>
                       <View>
                         <Text className="text-white font-semibold">
-                          {rider.displayName || "Unnamed Rider"}
+                          {riderUser.displayName || "Unnamed Rider"}
                         </Text>
-                        <Text className="text-white/70">{rider.email}</Text>
+                        <Text className="text-white/70">{riderUser.email}</Text>
                       </View>
                     </View>
 
@@ -220,6 +222,9 @@ export default function Details() {
                 <TouchableOpacity
                   style={{ backgroundColor: "#ff6b36" }}
                   className="rounded-xl py-4 items-center mt-4"
+                     onPress={() => {
+                      if (ride) handleRidePress(ride);
+                    }}
                 >
                   <Text className="text-white font-semibold">Join Ride</Text>
                 </TouchableOpacity>
