@@ -71,11 +71,11 @@ export default function Details() {
     if (!hasRideStarted(ride)) {
       Alert.alert(
         "Ride has not started yet",
-        "The scheduled start time hasn't arrived. Do you want to start anyway?",
+        "The scheduled start time hasn't arrived. Do you want to go anyway?",
         [
           { text: "Wait", style: "cancel" },
           {
-            text: "Start anyway",
+            text: "Go anyway",
             onPress: () => router.push(`/startRide?id=${ride._id}`),
           },
         ]
@@ -214,7 +214,7 @@ export default function Details() {
                       if (ride) handleRidePress(ride);
                     }}
                   >
-                    <Text className="text-white font-semibold">Start Ride</Text>
+                    <Text className="text-white font-semibold">Go to Lobby</Text>
                   </TouchableOpacity>
                 )
               ) : (

@@ -28,7 +28,6 @@ import {
 } from "@/sockets/rideSockets";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRoute } from "@/contexts/RouteContext";
-import getUserLocation from "../../utils/GetUserLocation";
 import FormatDistance from "@/utils/FormatDistance";
 import FormatDuration from "@/utils/FormatDuration";
 
@@ -37,10 +36,19 @@ const StartRide = () => {
   const { id } = useLocalSearchParams();
   const { user } = useAuth();
   const { fetchRideById } = useRide();
-  const { routeGeoJSON, routeInfo, fetchRoute, isLoadingRoute, cameraRef } = useRoute();
-  const userLocation = getUserLocation();
+  const {
+    routeGeoJSON,
+    routeInfo,
+    fetchRoute,
+    isLoadingRoute,
+    cameraRef,
+    userLocation,
+    clearRoute,
+  } = useRoute();
   const [ride, setRide] = useState<Ride | null>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
+
+  console.log('userloc', userLocation)
 
   const MAPTILER_API_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY;
 
@@ -50,14 +58,21 @@ const StartRide = () => {
   const currentRider = ride?.riders?.find((r) => r.user._id === user?._id);
   const isReady = currentRider?.ready;
 
+  // Clear route when component unmounts or ride changes
   useEffect(() => {
-    if (!userLocation || !ride || routeGeoJSON) return;
+    return () => {
+      clearRoute();
+    };
+  }, [id]); // Clear when ride ID changes
+
+  useEffect(() => {
+    if (!userLocation || !ride) return;
 
     const destination: [number, number] = ride.destinationCoords || [
       115.7628, -32.1174,
     ];
-    fetchRoute([userLocation.lon, userLocation.lat], destination);
-  }, [userLocation, ride]);
+    fetchRoute([userLocation.lon, userLocation.lat], destination, ride._id);
+  }, [userLocation, ride?._id]);
 
   // useEffect to get ride details by id
   useEffect(() => {
@@ -65,6 +80,7 @@ const StartRide = () => {
 
     const fetchRideDetails = async () => {
       try {
+        clearRoute();
         const data = await fetchRideById(id as string);
         setRide(data);
       } catch (error) {
@@ -91,7 +107,6 @@ const StartRide = () => {
     };
   }, [id]);
 
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView className="flex-1 bg-gray-50">
@@ -109,7 +124,7 @@ const StartRide = () => {
             <Camera
               ref={cameraRef}
               defaultSettings={{
-                centerCoordinate: [115.7628, -32.1174], // Coogee
+                centerCoordinate: ride?.destinationCoords,
                 zoomLevel: 12,
               }}
             />
@@ -190,24 +205,10 @@ const StartRide = () => {
 
           {/* Top Overlay */}
           <View className="absolute top-4 left-0 right-0 px-4 flex-row items-center justify-between">
-            {/* Back Button */}
-            <TouchableOpacity
-              onPress={() => router.back()}
-              className="bg-white rounded-full p-3 shadow-md"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
-                elevation: 5,
-              }}
-            >
-              <Ionicons name="arrow-back" size={24} color="black" />
-            </TouchableOpacity>
 
             {/* Destination Card */}
             <View
-              className="bg-white flex-row flex-1 ml-4 p-3 rounded-full gap-4 items-center"
+              className="bg-white flex-row flex-1 p-3 rounded-lg gap-2 items-center "
               style={{
                 shadowColor: "#000",
                 shadowOpacity: 0.1,
@@ -217,16 +218,19 @@ const StartRide = () => {
             >
               <Ionicons name="location-outline" size={16} color="black" />
               <Text
-                className="text-lg font-semibold text-black"
-                numberOfLines={1}
+                className="text-lg  text-black"
+                numberOfLines={2}
               >
                 {ride?.rideDestination || "Destination"}
               </Text>
+              <TouchableOpacity  onPress={() => router.back()}>
+                <Ionicons name="close-outline" size={22} color="black" />
+              </TouchableOpacity>
             </View>
           </View>
 
           {/* Route Info Card (Distance & Duration) */}
-          {routeInfo && !isLoadingRoute && (
+          {/* {routeInfo && !isLoadingRoute && (
             <View
               className="absolute top-20 right-4 bg-white px-4 py-2 rounded-full flex-row items-center gap-3"
               style={{
@@ -250,7 +254,7 @@ const StartRide = () => {
                 </Text>
               </View>
             </View>
-          )}
+          )} */}
 
           {/* NEW - Loading Indicator for route fetching */}
           {isLoadingRoute && (
@@ -271,6 +275,7 @@ const StartRide = () => {
               </View>
             </View>
           )}
+          
 
           {/* floating locate button */}
           <TouchableOpacity
@@ -304,16 +309,30 @@ const StartRide = () => {
                   <Text className="text-2xl font-bold">Ready to Ride?</Text>
                   <Text className="text-lg my-4">Riders Status</Text>
                 </View>
-                {isAdmin && (
+               
                   <TouchableOpacity
-                    className="py-6 px-4 rounded-2xl bg-green-600 items-center justify-center mb-4"
+                    className="py-6 px-4 rounded-2xl items-center justify-center mb-4"
                     onPress={() =>
-                      router.replace("/(protected)/liveRideScreen")
+                      router.push(`/(protected)/liveRideScreen?id=${ride?._id}`)
+                    }
+                  >
+                    <Text className="font-semibold ">Start Ride</Text>
+                  </TouchableOpacity>
+                {/* {isAdmin && (
+                  <TouchableOpacity
+                    className="py-6 px-4 rounded-2xl items-center justify-center mb-4"
+                    style={{
+                      backgroundColor:
+                        isAdmin && routeGeoJSON ? "#22c55e" : "#94a3b8", // green if ready, gray if disabled
+                    }}
+                    disabled={!isAdmin || !routeGeoJSON} // disable button if not admin or route not ready
+                    onPress={() =>
+                      router.push(`/(protected)/liveRideScreen?id=${ride?._id}`)
                     }
                   >
                     <Text className="font-semibold text-white">Start Ride</Text>
                   </TouchableOpacity>
-                )}
+                )} */}
               </View>
               <FlatList
                 data={ride?.riders || []}
