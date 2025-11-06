@@ -11,6 +11,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  KeyboardAvoidingView
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRide } from "../../contexts/RideContext";
@@ -110,8 +111,12 @@ const CreateRide = () => {
           <Ionicons name="chevron-back-outline" size={30} color={"black"} />
           <Text className="text-lg font-interRegular">Back</Text>
         </TouchableOpacity>
-
-      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+  <KeyboardAvoidingView 
+    style={{ flex: 1 }}
+    behavior={Platform.OS === "ios" ? "padding" : "height"}
+    keyboardVerticalOffset={0}
+  >
+      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
         {/* Ride Name Input */}
         <View className="mb-6">
           <Text
@@ -230,15 +235,16 @@ const CreateRide = () => {
         </View>
         {/* Create Ride Button */}
         <TouchableOpacity
-          style={{ backgroundColor: "#000000" }}
-          className="shadow-lg font-interMedium rounded-xl py-4 items-center mb-8"
+          style={{ backgroundColor: "#7B3FE4" }}
+          className="shadow-lg rounded-xl py-4 items-center mb-8"
           onPress={handleCreateRide}
         >
-          <Text className="text-white text-lg font-semibold">
+          <Text className="text-white text-base font-interMedium">
             {isLoading ? "Creating Ride" : "Create Ride"}
           </Text>
         </TouchableOpacity>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

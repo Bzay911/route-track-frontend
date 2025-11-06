@@ -5,7 +5,7 @@ import {
   MapView,
   ShapeSource,
   LineLayer,
-  CircleLayer,
+  CircleLayer
 } from "@maplibre/maplibre-react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useRef, useEffect, useState } from "react";
@@ -28,8 +28,6 @@ import {
 } from "@/sockets/rideSockets";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRoute } from "@/contexts/RouteContext";
-import FormatDistance from "@/utils/FormatDistance";
-import FormatDuration from "@/utils/FormatDuration";
 
 const StartRide = () => {
   const router = useRouter();
@@ -189,6 +187,7 @@ const StartRide = () => {
                   coordinates: ride?.destinationCoords || [115.7628, -32.1174], // else fallback to coogee
                 },
                 properties: {},
+                
               }}
             >
               <CircleLayer
@@ -266,7 +265,7 @@ const StartRide = () => {
                 });
               }
             }}
-            className="absolute bottom-[22%] right-4 w-14 h-14 rounded-full bg-orange-600 justify-center items-center shadow-lg"
+            className="absolute bottom-[22%] right-4 w-14 h-14 rounded-full bg-violet-600 justify-center items-center shadow-lg"
           >
             <Ionicons name="locate" size={28} color="white" />
           </TouchableOpacity>
@@ -324,9 +323,9 @@ const StartRide = () => {
             </View>
 
             <TouchableOpacity
-              className="p-6 rounded-2xl items-center justify-center mx-6 mt-4"
+              className="p-4 rounded-2xl items-center justify-center mx-4 mt-4"
               style={{
-                backgroundColor: isReady ? "#ff6b36" : "#22c55e",
+                backgroundColor: isReady ? "#EF4444" : "#22c55e",
               }}
               onPress={() => {
                 const socket = getSocket();
@@ -345,7 +344,7 @@ const StartRide = () => {
                 }
               }}
             >
-              <Text className="font-interMedium text-white">
+              <Text className="font-interRegular text-white">
                 {isReady ? "Not ready " : " I'm Ready"}
               </Text>
             </TouchableOpacity>

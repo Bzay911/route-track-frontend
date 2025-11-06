@@ -40,7 +40,7 @@ const Rides = () => {
       }`}
     >
       <Text
-        className={`font-interMedium ${
+        className={`font-interRegular text-base ${
           isActive ? "text-white" : "text-gray-800"
         }`}
       >
@@ -91,11 +91,11 @@ const Rides = () => {
         </ScrollView>
       ) : (
         <View className="flex-1 items-center justify-center px-4">
-          <Ionicons name="bicycle-outline" size={64} color="#9CA3AF" />
-          <Text className="text-gray-500 text-lg mt-4 text-center">
+          <Ionicons name="bicycle-outline" size={64} color="#4B5563" />
+          <Text className="text-lg mt-4 font-interRegular" style={{color:"#4B5563"}}>
             No rides found
           </Text>
-          <Text className="text-gray-400 text-sm mt-2 text-center">
+          <Text className="text-sm mt-2 font-interRegular" style={{color:"#4B5563"}}>
             Check back later for new rides
           </Text>
         </View>
@@ -103,9 +103,11 @@ const Rides = () => {
         {/* Floating Action Button */}
       <TouchableOpacity
         onPress={() => router.push("/(protected)/createRide")}
-        className="absolute bottom-6 right-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
+         style={{ backgroundColor: "#7B3FE4" }}
+        className="absolute bottom-6 right-4 h-16 flex-row items-center justify-center gap-2 shadow-lg px-2 rounded-xl"
       >
-        <Ionicons name="add" size={24} color="#1a1f3a" />
+        <Ionicons name="add" size={18} color="white" />
+        <Text className="text-white font-interRegular text-sm">Create Ride</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

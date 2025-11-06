@@ -17,6 +17,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import hasRideStarted from "@/utils/HasRideStarted";
 import { useAuth } from "@/contexts/AuthContext";
+import PulseAnimation from "@/components/animations/PulseAnimation";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -43,6 +44,15 @@ export default function HomeScreen() {
       // if yes proceed to the lobby
       router.push(`/startRide?id=${ride._id}`);
     }
+  };
+
+    const handleNextRidePress = (ride: any) => {
+    router.push({
+      pathname: "/(protected)/ride/[id]",
+      params: {
+        id: ride._id,
+      },
+    });
   };
 
   // Clone and sort safely
@@ -81,17 +91,17 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        <View className="flex-1 items-center font-interMedium">
-          <Text className=" text-lg" style={{ color: "#0A0A0A" }}>
+        <View className="flex-1 items-center">
+          <Text className=" text-xl font-interMedium" style={{ color: "#0A0A0A" }}>
             Welcome
           </Text>
-          <Text className=" text-lg font-interBold" style={{ color: "#4B5563" }}>
+          <Text className=" text-base font-interRegular" style={{ color: "#4B5563" }}>
             {user?.displayName || "User"}
           </Text>
         </View>
 
         <TouchableOpacity className="p-2">
-          <Ionicons name="notifications-outline" size={24} color="#6B7280" />
+          <Ionicons name="notifications-outline" size={24} color="#4B5563" />
         </TouchableOpacity>
       </View>
 
@@ -106,12 +116,12 @@ export default function HomeScreen() {
               {/* Next Ride capsule */}
               <View
                 className="absolute top-3 left-4 rounded-full px-3 py-2 items-center justify-center"
-                style={{ backgroundColor: "#000000" }}
+                style={{ backgroundColor: "#7B3FE4" }}
               >
                 <Text className="text-white text-sm font-interRegular">Next Ride</Text>
               </View>
               <Text
-                className="text-2xl mb-2 mt-9 font-interBold"
+                className="text-xl mb-2 mt-9 font-interMedium"
                 style={{ color: "#0A0A0A" }}
               >
                 {nextRide.rideName}
@@ -122,10 +132,10 @@ export default function HomeScreen() {
               >
                 {nextRide.rideDescription || "Join us for an amazing ride!"}
               </Text>
-              <View className="mb-6 gap-2 mt-2">
+              <View className="mb-6 gap-3 mt-3">
                 <View className="flex-row items-center">
                   <Ionicons name="calendar-outline" size={20} color="#4B5563" />
-                  <Text className="ml-3 font-interRegular" style={{ color: "#4B5563" }}>
+                  <Text className="ml-3 text-base font-interRegular" style={{ color: "#4B5563" }}>
                     {nextRide.rideDate
                       ? new Date(nextRide.rideDate).toLocaleDateString(
                           "en-US",
@@ -140,7 +150,7 @@ export default function HomeScreen() {
                 </View>
                 <View className="flex-row items-center">
                   <Ionicons name="time-outline" size={20} color="#4B5563" />
-                  <Text className="ml-3 font-interRegular" style={{ color: "#4B5563" }}>
+                  <Text className="ml-3  text-base font-interRegular" style={{ color: "#4B5563" }}>
                     {nextRide.rideTime
                       ? new Date(nextRide.rideTime).toLocaleTimeString([], {
                           hour: "2-digit",
@@ -151,34 +161,40 @@ export default function HomeScreen() {
                 </View>
                 <View className="flex-row items-center">
                   <Ionicons name="location-outline" size={20} color="#4B5563" />
-                  <Text className="ml-3 font-interRegular" style={{ color: "#4B5563" }}>
+                  <Text className="ml-3  text-base font-interRegular" style={{ color: "#4B5563" }}>
                     {nextRide.rideDestination}
                   </Text>
                 </View>
               </View>
               <TouchableOpacity
-                style={{ backgroundColor: "#000000" }}
+                style={{ backgroundColor: "#7B3FE4" }}
                 className="rounded-xl py-4 items-center"
+                onPress={() => handleNextRidePress(nextRide)}
               >
-                <Text className="text-white font-interBold">View Details</Text>
+                <Text className="text-white text-base font-interMedium">View Details</Text>
               </TouchableOpacity>
             </View>
           </View>
         ) : (
-          <View className="mx-6 rounded-2xl shadow-lg p-6 mb-4 border border-white/20" style={{ backgroundColor: "#F9FAFB" }}>
-            <Text className="text-center" style={{ color: "#4B5563" }}>
+          <View className="m-6 rounded-2xl shadow-lg p-6 h-[200px] items-center justify-center" style={{ backgroundColor: "#F9FAFB" }}>
+            <Text className="text-center font-interRegular" style={{ color: "#4B5563" }}>
               No upcoming rides found
             </Text>
-            <Text className="text-center mt-6" style={{ color: "#4B5563" }}>
+            <Text className="text-center mt-6 font-interRegular" style={{ color: "#4B5563" }}>
               Create one or join one to continue !
             </Text>
+            <TouchableOpacity className="p-4 w-full mt-6 shadow-lg rounded-xl items-center"
+            style={{ backgroundColor: "#7B3FE4" }}
+             onPress={() => router.push("/(protected)/createRide")}>
+              <Text className="text-white font-interRegular">Create ride</Text>
+            </TouchableOpacity>
           </View>
         )}
 
         {/* Upcoming Rides Section */}
         <View className="mx-6 mt-8">
           <Text
-            className="text-2xl font-interBold mb-6"
+            className="text-lg font-interBold mb-6"
             style={{ color: "#0A0A0A" }}
           >
             Upcoming Rides
@@ -188,9 +204,9 @@ export default function HomeScreen() {
         {upcomingRides.length > 0 ? (
           upcomingRides.map((ride) => <RideCard key={ride._id} ride={ride} />)
         ) : (
-          <View className="shadow-lg mx-6 rounded-2xl p-6 mb-4 border border-white/20" style={{ backgroundColor: "#F9FAFB" }}>
-            <Text className="text-center font-interRegular" style={{ color: "#4B5563" }}>
-              No upcoming rides found
+          <View className="shadow-lg mx-6 rounded-2xl p-6 mb-4 h-[300px] items-center justify-center" style={{ backgroundColor: "#F9FAFB" }}>
+            <Text className="font-interRegular" style={{ color: "#4B5563" }}>
+             Your upcoming rides will appear here
             </Text>
           </View>
         )}
@@ -208,7 +224,7 @@ export default function HomeScreen() {
                 keyExtractor={(ride) => ride._id}
                 renderItem={({ item }) => (
                   <TouchableOpacity
-                    className="py-3 border-b border-gray-200"
+                    className="py-6 px-2 border-b border-gray-200"
                     onPress={() => handleRidePress(item)}
                   >
                     <Text className="text-base">{item.rideName}</Text>
@@ -231,24 +247,33 @@ export default function HomeScreen() {
         <View className="h-20" />
       </ScrollView>
 
-      {rides && rides.length > 0 ? (
-        <TouchableOpacity
-          // onPress={() => router.push("/(protected)/startRide")}
-          onPress={() => setModalVisible(true)}
-          className="absolute bottom-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
-          style={{ alignSelf: "center" }} // center horizontally
-        >
-          <Ionicons name="add" size={24} color="#1a1f3a" />
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity
-          onPress={() => router.push("/(protected)/createRide")}
-          className="absolute bottom-6 right-6 w-16 h-16 bg-white rounded-full items-center justify-center shadow-lg"
-        >
-          <Ionicons name="add" size={24} color="#1a1f3a" />
-          {/* <Text className="sr-only">Create Ride</Text> */}
-        </TouchableOpacity>
-      )}
+  {rides && rides.length > 0 && (
+  <View
+    style={{
+      position: "absolute",
+      bottom: 24,
+      left: 0,
+      right: 0,
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    {/* Background pulse effect */}
+    <PulseAnimation size={80} color="rgba(123,63,228,0.3)" />
+
+    {/* Actual button */}
+    <TouchableOpacity
+      onPress={() => setModalVisible(true)}
+      activeOpacity={0.7}
+      style={{ backgroundColor: "#7B3FE4" }}
+      className="p-6 rounded-full items-center justify-center shadow-lg"
+    >
+      {/* <Ionicons name="add" size={28} color="#7B3FE4" /> */}
+      <Text className="text-2xl font-interMedium text-white">Go</Text>
+    </TouchableOpacity>
+  </View>
+)}
+
     </SafeAreaView>
   );
 }

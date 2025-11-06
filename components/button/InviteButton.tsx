@@ -5,13 +5,11 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 interface InviteButtonProps {
   id: string; // its the groupId
@@ -77,12 +75,13 @@ const InviteButton: React.FC<InviteButtonProps> = ({ id }) => {
   };
 
   return (
-    <View>
+      <>
+    {/* <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 16 }}> */}
       {/* Title */}
       <View className="flex-row items-center justify-between mb-3">
-        <Text className="text-xl font-bold" style={{color:"#0A0A0A"}}>Invite Rider</Text>
+        <Text className="text-lg font-interBold" style={{color:"#0A0A0A"}}>Invite Rider</Text>
         <TouchableOpacity className="p-2" onPress={showInviteInfo}>
-          <Ionicons name="help-circle" size={20} color="4B5563" />
+          <Ionicons name="help-circle" size={20} color="#7B3FE4" />
         </TouchableOpacity>
       </View>
 
@@ -90,7 +89,7 @@ const InviteButton: React.FC<InviteButtonProps> = ({ id }) => {
       <TextInput
         className="rounded-lg p-3 shadow-lg mb-4 text-black bg-white text-base"
         placeholder="someone@gmail.com"
-        placeholderTextColor="#4B5563"
+        placeholderTextColor="#9ca3af"
         value={inviteeEmail}
         onChangeText={setInviteeEmail}
         keyboardType="email-address"
@@ -99,15 +98,18 @@ const InviteButton: React.FC<InviteButtonProps> = ({ id }) => {
 
       {/* Invite Button */}
       <TouchableOpacity
-        className={`bg-black shadow-lg rounded-lg mt-3 ${isInviting ? "opacity-70" : ""}`}
+        className={`shadow-lg rounded-xl mt-3 ${isInviting ? "opacity-70" : ""}`}
+        style={{ backgroundColor: "#7B3FE4" }}
         onPress={handleInviteUser}
         disabled={isInviting}
       >
-        <Text className="text-white font-bold text-center py-4">
+        <Text className="text-white font-interMedium text-center py-4">
           {isInviting ? "Sending..." : "Send Invitation"}
         </Text>
       </TouchableOpacity>
-    </View>
+      {/* </ScrollView> */}
+      </>
+
   );
 };
 

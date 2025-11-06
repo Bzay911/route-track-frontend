@@ -211,13 +211,23 @@ const liveRideScreen = () => {
                 properties: {},
               }}
             >
+              {/* Outer pulse circle */}
               <CircleLayer
-                id={`rider-marker-${rider.userId}`}
+                id={`riderPulse-${rider.userId}`}
+                style={{
+                  circleRadius: 20,
+                  circleColor: "#FF0000", // red outer circle
+                  circleOpacity: 0.2,
+                }}
+              />
+              {/* Inner solid circle */}
+              <CircleLayer
+                id={`riderDot-${rider.userId}`}
                 style={{
                   circleRadius: 8,
-                  circleColor: "#FF0000",
+                  circleColor: "#FF0000", // red inner circle
                   circleStrokeColor: "#FFFFFF",
-                  circleStrokeWidth: 2,
+                  circleStrokeWidth: 3,
                 }}
               />
             </ShapeSource>

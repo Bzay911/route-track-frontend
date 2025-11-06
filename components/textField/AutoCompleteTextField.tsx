@@ -56,7 +56,7 @@ const AutoCompleteTextField = ({
         placeholderTextColor="#9ca3af"
         value={query}
         onChangeText={handleSearch}
-        className="bg-white shadow-lg font-interRegular rounded-xl px-4 py-4 text-white text-base"
+        className="bg-white shadow-lg font-interRegular rounded-xl px-4 py-4 text-base"
       />
       {results.length > 0 && (
         <View>
@@ -69,9 +69,9 @@ const AutoCompleteTextField = ({
                 setQuery(item.name);
                 setResults([]);
               }}
-              className="p-4 border-b border-white/20"
+              className="p-4 border-b border-gray-300"
             >
-              <Text className="text-white">{item.name}</Text>
+              <Text className="font-interRegular">{item.name}</Text>
             </TouchableOpacity>
           ))}
         </View>
