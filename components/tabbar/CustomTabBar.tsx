@@ -78,7 +78,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
                 className="items-center justify-center"
               >
                 {Icon}
-                <Text style={{ color: isFocused ? "#7437ff" : "gray" }}>
+                <Text style={{ color: isFocused ? "#7437ff" : "gray" }} className="text-[12px] font-interRegular">
                   {label}
                 </Text>
               </TouchableOpacity>
