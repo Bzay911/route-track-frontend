@@ -83,7 +83,7 @@ const Rides = () => {
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 180 }}
         >
           {rides.map((ride, index) => {
             return <RideCard key={ride._id || `ride-${index}`} ride={ride} />;
@@ -104,7 +104,7 @@ const Rides = () => {
       <TouchableOpacity
         onPress={() => router.push("/(protected)/createRide")}
          style={{ backgroundColor: "#7B3FE4" }}
-        className="absolute bottom-6 right-4 h-16 flex-row items-center justify-center gap-2 shadow-lg px-2 rounded-xl"
+        className="absolute bottom-32 right-4 h-16 flex-row items-center justify-center gap-2 shadow-lg px-2 rounded-xl"
       >
         <Ionicons name="add" size={18} color="white" />
         <Text className="text-white font-interRegular text-sm">Create Ride</Text>

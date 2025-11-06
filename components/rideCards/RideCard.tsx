@@ -19,7 +19,7 @@ const RideCard = ({ ride }: { ride: Ride }) => {
   };
 
   return (
-    <View className="bg-white/10 rounded-2xl shadow-lg p-4 mb-4 mx-4 border border-white/20" style={{backgroundColor: "#F9FAFB"}}>
+    <View className="rounded-2xl shadow-lg p-4 mb-4 mx-4 border border-white/20" style={{backgroundColor: "#F9FAFB"}}>
       <TouchableOpacity onPress={() => handleRidePress(ride)}>
         {/* Header with title and View on map button */}
         <View className="flex-row justify-between items-start mb-3">

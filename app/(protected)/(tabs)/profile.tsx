@@ -19,7 +19,7 @@ const Profile = () => {
         <View className="pt-4 pb-2 px-4">
         <Text className="text-2xl font-interBold" style={{color:"#0A0A0A"}}>Profile</Text>
       </View>
-      <View className="flex-1 justify-between mx-4">
+      <View className="flex-1 mx-4">
         {/* Top content */}
         <View>
           {/* Profile Picture */}
