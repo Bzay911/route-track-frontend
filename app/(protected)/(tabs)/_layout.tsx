@@ -31,13 +31,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Ionicons size={28} name="bicycle" color={color} />,
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="groups"
         options={{
           title: 'Groups',
           tabBarIcon: ({ color }) => <Ionicons size={28} name="people" color={color} />,
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="profile"
         options={{

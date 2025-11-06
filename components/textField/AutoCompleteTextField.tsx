@@ -53,10 +53,10 @@ const AutoCompleteTextField = ({
     <View>
       <TextInput
         placeholder="e.g. Pacific Coast Highway"
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#9ca3af"
         value={query}
         onChangeText={handleSearch}
-        className="bg-white/10 border border-white/20 rounded-xl px-4 py-4 text-white text-base"
+        className="bg-white shadow-lg font-interRegular rounded-xl px-4 py-4 text-white text-base"
       />
       {results.length > 0 && (
         <View>

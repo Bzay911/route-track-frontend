@@ -6,8 +6,8 @@ const LobbyRiderCard = (rider: any) => {
       {/* Left Section: Avatar + Info */}
       <View className="flex-row items-center flex-1">
         {/* Avatar */}
-        <View className="bg-cyan-400 rounded-full w-12 h-12 items-center justify-center mr-4">
-          <Text className="text-xl font-bold">
+        <View className="bg-black rounded-full w-12 h-12 items-center justify-center mr-4">
+          <Text className="text-xl font-interBold text-white">
             {rider.user.email?.charAt(0).toUpperCase() || 'U'}
           </Text>
         </View>
@@ -15,15 +15,15 @@ const LobbyRiderCard = (rider: any) => {
         {/* Name and Details */}
         <View className="flex-1">
           {/* Name Row */}
-          <Text className="text-gray-900 text-medium font-semibold mb-1">
+          <Text className="text-gray-900 text-medium font-interMedium mb-1">
             {rider.user.email}
           </Text>
 
           {/* Distance and ETA Row */}
           <View className="flex-row items-center">
-            <Text className="text-gray-600 text-sm">16km</Text>
-            <Text className="text-gray-400 mx-2">•</Text>
-            <Text className="text-gray-600 text-sm">32 mins</Text>
+            <Text className="text-gray-600 text-sm font-interRegular">16km</Text>
+            <Text className="text-gray-400 mx-2 font-interRegular">•</Text>
+            <Text className="text-gray-600 text-sm font-interRegular">32 mins</Text>
           </View>
         </View>
       </View>
@@ -35,7 +35,7 @@ const LobbyRiderCard = (rider: any) => {
         }`}
       >
         <Text
-          className={`text-sm ${
+          className={`text-sm font-interRegular ${
             rider.ready ? 'text-white' : 'text-gray-600'
           }`}
         >

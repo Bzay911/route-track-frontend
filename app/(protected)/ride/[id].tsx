@@ -42,8 +42,6 @@ export default function Details() {
     fetchRideDetails();
   }, [id]);
 
-  // console.log('ride', ride)
-
   useEffect(() => {
     if (ride?.createdby && user?._id) {
       setIsAdmin(ride.createdby.toString() === user._id.toString());
@@ -87,33 +85,37 @@ export default function Details() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#1a1f3a" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f5f5f5"}}>
       <ScrollView className="flex-1">
+        <TouchableOpacity onPress={() => router.back()} className="mx-6 mt-8 flex-row items-center">
+        <Ionicons name="chevron-back-outline" size={30} color={"black"} />
+        <Text className="text-lg font-interRegular">Back</Text>
+        </TouchableOpacity>
         {/* Group Details Card */}
-        <View className="mx-6">
-          <View className="bg-white/10 rounded-2xl p-6">
-            <Text className="text-white text-2xl font-bold mb-2">
+        <View className="mx-6 mt-8">
+          <View className="rounded-2xl p-6 shadow-lg" style={{backgroundColor: "#F9FAFB"}}>
+            <Text className=" text-2xl font-interBold mb-2" style={{color:"#0A0A0A"}}>
               {ride?.rideName}
             </Text>
-            <Text className="text-white/70 text-base mb-4">
+            <Text className="text-base mb-4 font-interRegular" style={{color:"#0A0A0A"}}>
               {ride?.rideDescription || "Welcome to the group"}
             </Text>
             <View className="gap-2">
-              <View className="flex-row items-center">
-                <Ionicons name="calendar-outline" size={20} color="white" />
-                <Text className="text-white/70 ml-3">
+              <View className="flex-row items-center ">
+                <Ionicons name="calendar-outline" size={20} color="#4B5563" />
+                <Text className=" ml-3 font-interRegular" style={{color:"#4B5563"}}>
                   {formatDate(ride?.rideDate as string)}
                 </Text>
               </View>
               <View className="flex-row items-center">
-                <Ionicons name="time-outline" size={20} color="white" />
-                <Text className="text-white/70 ml-3">
+                <Ionicons name="time-outline" size={20} color="#4B5563" />
+                <Text className=" ml-3 font-interRegular" style={{color:"#4B5563"}}>
                   {formatTime(ride?.rideTime as string)}
                 </Text>
               </View>
               <View className="flex-row items-center">
-                <Ionicons name="location-outline" size={20} color="white" />
-                <Text className="text-white/70 ml-3">
+                <Ionicons name="location-outline" size={20} color="#4B5563" />
+                <Text className=" ml-3 font-interRegular" style={{color:"#4B5563"}}>
                   {ride?.rideDestination}
                 </Text>
               </View>
@@ -122,13 +124,13 @@ export default function Details() {
         </View>
 
         {/* Tabs */}
-        <View className="flex-row mx-6 mt-8 mb-4 bg-white/5 rounded-2xl overflow-hidden">
+        <View className="flex-row mx-6 mt-8 mb-4 shadow-lg rounded-2xl overflow-hidden">
           <TouchableOpacity
             onPress={() => setActiveTab("members")}
-            className={`flex-1 py-2 ${activeTab === "members" ? "bg-blue-500" : "bg-transparent"}`}
+            className={`flex-1 py-2 ${activeTab === "members" ? "bg-black" : "bg-gray-100"}`}
           >
             <Text
-              className={`text-center font-semibold ${activeTab === "members" ? "text-white" : "text-white/70"}`}
+              className={`text-center font-interMedium ${activeTab === "members" ? "text-white" : "text-gray-800"}`}
             >
               Riders
             </Text>
@@ -136,10 +138,10 @@ export default function Details() {
 
           <TouchableOpacity
             onPress={() => setActiveTab("invite")}
-            className={`flex-1 py-2 ${activeTab === "invite" ? "bg-blue-500" : "bg-transparent"}`}
+            className={`flex-1 py-2 ${activeTab === "invite" ? "bg-black" : "bg-gray-100"}`}
           >
             <Text
-              className={`text-center font-semibold ${activeTab === "invite" ? "text-white" : "text-white/70"}`}
+              className={`text-center font-interMedium ${activeTab === "invite" ? "text-white" : "text-gray-800"}`}
             >
               Invite
             </Text>
@@ -157,26 +159,27 @@ export default function Details() {
                 return (
                   <View
                     key={rider._id}
-                    className="bg-white/10 rounded-lg p-4 mb-3 flex-row items-center justify-between relative"
+                    className="rounded-lg p-4 mb-3 flex-row items-center justify-between relative shadow-lg"
+                    style={{backgroundColor: "#F9FAFB"}}
                   >
                     <View className="flex-row items-center">
-                      <View className="w-10 h-10 bg-blue-500 rounded-full items-center justify-center mr-3">
-                        <Text className="text-white font-bold">
+                      <View className="w-10 h-10 rounded-full items-center justify-center mr-3" style={{backgroundColor: "#000000"}}>
+                        <Text className=" font-interBold" style={{color:"#FFFFFF"}}>
                           {riderUser.email.charAt(0)}
                         </Text>
                       </View>
                       <View>
-                        <Text className="text-white font-semibold">
+                        <Text className="text-white font-interMedium" style={{color:"#4B5563"}}>
                           {riderUser.displayName || "Unnamed Rider"}
                         </Text>
-                        <Text className="text-white/70">{riderUser.email}</Text>
+                        <Text className="" style={{color:"#4B5563"}}>{riderUser.email}</Text>
                       </View>
                     </View>
 
                     {/* Admin badge */}
                     {isRiderAdmin && (
                       <View className="bg-green-600 px-3 py-1 rounded-full absolute top-0 right-0 m-2">
-                        <Text className="text-white text-xs">Admin</Text>
+                        <Text className="text-white font-interRegular text-xs">Admin</Text>
                       </View>
                     )}
                   </View>
@@ -187,7 +190,7 @@ export default function Details() {
               {isAdmin ? (
                 ride?.riders.length === 1 ? (
                   // Only admin is in the ride
-                  <View className="bg-white/10 rounded-2xl p-6 items-center shadow-lg w-full max-w-sm mt-6">
+                  <View className="bg-white/10 rounded-2xl p-6 items-center shadow-lg w-full max-w-sm mt-6" >
  
                     {/* Navigate to Invite Button */}
                     <TouchableOpacity
@@ -195,26 +198,26 @@ export default function Details() {
                       className="bg-yellow-500 rounded-lg py-3 px-6 mb-4 w-full items-center"
                       activeOpacity={0.8}
                     >
-                      <Text className="text-white font-semibold text-lg">
+                      <Text className="text-white font-interMedium text-lg">
                         Invite Members
                       </Text>
                     </TouchableOpacity>
 
                     {/* Info Text */}
-                    <Text className="text-center text-gray-300 text-base leading-relaxed">
+                    <Text className="text-center text-gray-300 text-base font-interRegular leading-relaxed">
                       Invite some members first to begin the ride!
                     </Text>
                   </View>
                 ) : (
                   // Admin + other riders
                   <TouchableOpacity
-                    style={{ backgroundColor: "#ff6b36" }}
-                    className="rounded-xl py-4 items-center mt-4"
+                    style={{ backgroundColor: "#000000" }}
+                    className="rounded-xl py-4 items-center mt-4 "
                     onPress={() => {
                       if (ride) handleRidePress(ride);
                     }}
                   >
-                    <Text className="text-white font-semibold">Go to Lobby</Text>
+                    <Text className="text-white font-interBold">Go to Lobby</Text>
                   </TouchableOpacity>
                 )
               ) : (

@@ -11,9 +11,21 @@ import { RideProvider } from "../../contexts/RideContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { RouteProvider } from "@/contexts/RouteContext";
+import { useFonts } from "expo-font";
 
 export default function ProtectedLayout() {
+  const [loaded, error] = useFonts({
+    "Inter-Bold": require("../../assets/fonts/Inter_18pt-Bold.ttf"),
+    "Inter-Regular": require("../../assets/fonts/Inter_18pt-Regular.ttf"),
+    "Inter-Medium": require("../../assets/fonts/Inter_18pt-Medium.ttf"),
+  });
+
   const colorScheme = useColorScheme();
+
+  if (!loaded || error) {
+    return null;
+  }
+
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -22,19 +34,27 @@ export default function ProtectedLayout() {
         >
           <RideProvider>
             <RouteProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="createRide"
-                options={{ title: "Create Ride" }}
-              />
-              <Stack.Screen name="ride/[id]" options={{ title: "" }} />
-              <Stack.Screen name="startRide" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="liveRideScreen"
-                options={{ headerShown: false }}
-              />
-            </Stack>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="createRide"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="ride/[id]"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="startRide"
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="liveRideScreen"
+                  options={{ headerShown: false }}
+                />
+              </Stack>
             </RouteProvider>
           </RideProvider>
           <StatusBar style="auto" />

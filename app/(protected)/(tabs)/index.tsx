@@ -22,7 +22,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { rides } = useRide();
   const [modalVisible, setModalVisible] = useState(false);
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   // checking if the started time has arrived yet
   const handleRidePress = (ride: Ride) => {
@@ -66,23 +66,32 @@ export default function HomeScreen() {
     return rideDate > now && ride._id !== nextRide?._id;
   });
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: "#1a1f3a" }}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: "#f5f5f5" }}>
       {/* Header */}
       <View
         className="flex-row items-center justify-between px-6 py-4"
-        style={{ backgroundColor: "#1a1f3a" }}
+        style={{ backgroundColor: "#f5f5f5" }}
       >
-        <View className="w-12 h-12 bg-white/20 rounded-full items-center justify-center">
-          <Text className="text-white text-lg font-semibold">{user?.displayName.charAt(0) || user?.email.charAt(0)}</Text>
+        <View
+          className="w-12 h-12 rounded-full items-center shadow-lg justify-center"
+          style={{ backgroundColor: "#000000" }}
+        >
+          <Text className="text-white text-lg font-interMedium">
+            {user?.displayName.charAt(0) || user?.email.charAt(0)}
+          </Text>
         </View>
 
-        <View className="flex-1 items-center">
-          <Text className="text-white/70 text-lg">Welcome</Text>
-          <Text className="text-white text-lg font-semibold">{user?.displayName || "User"}</Text>
+        <View className="flex-1 items-center font-interMedium">
+          <Text className=" text-lg" style={{ color: "#0A0A0A" }}>
+            Welcome
+          </Text>
+          <Text className=" text-lg font-interBold" style={{ color: "#4B5563" }}>
+            {user?.displayName || "User"}
+          </Text>
         </View>
 
         <TouchableOpacity className="p-2">
-          <Ionicons name="notifications-outline" size={24} color="white" />
+          <Ionicons name="notifications-outline" size={24} color="#6B7280" />
         </TouchableOpacity>
       </View>
 
@@ -90,24 +99,33 @@ export default function HomeScreen() {
         {/* Next Ride Section */}
         {nextRide ? (
           <View className="mx-6 mt-6">
-            <View className="bg-white/10 rounded-2xl p-6 relative">
+            <View
+              className="rounded-2xl p-6 shadow-lg relative"
+              style={{ backgroundColor: "#F9FAFB" }}
+            >
               {/* Next Ride capsule */}
               <View
                 className="absolute top-3 left-4 rounded-full px-3 py-2 items-center justify-center"
-                style={{ backgroundColor: "#ff6b36" }}
+                style={{ backgroundColor: "#000000" }}
               >
-                <Text className="text-white text-sm">Next Ride</Text>
+                <Text className="text-white text-sm font-interRegular">Next Ride</Text>
               </View>
-              <Text className="text-white text-2xl font-bold mb-2 mt-9">
+              <Text
+                className="text-2xl mb-2 mt-9 font-interBold"
+                style={{ color: "#0A0A0A" }}
+              >
                 {nextRide.rideName}
               </Text>
-              <Text className="text-white/70 text-base">
+              <Text
+                className="text-base font-interRegular"
+                style={{ color: "#4B5563" }}
+              >
                 {nextRide.rideDescription || "Join us for an amazing ride!"}
               </Text>
-              <View className="mb-6 gap-2">
+              <View className="mb-6 gap-2 mt-2">
                 <View className="flex-row items-center">
-                  <Ionicons name="calendar-outline" size={20} color="white" />
-                  <Text className="text-white/70 ml-3">
+                  <Ionicons name="calendar-outline" size={20} color="#4B5563" />
+                  <Text className="ml-3 font-interRegular" style={{ color: "#4B5563" }}>
                     {nextRide.rideDate
                       ? new Date(nextRide.rideDate).toLocaleDateString(
                           "en-US",
@@ -121,8 +139,8 @@ export default function HomeScreen() {
                   </Text>
                 </View>
                 <View className="flex-row items-center">
-                  <Ionicons name="time-outline" size={20} color="white" />
-                  <Text className="text-white/70 ml-3">
+                  <Ionicons name="time-outline" size={20} color="#4B5563" />
+                  <Text className="ml-3 font-interRegular" style={{ color: "#4B5563" }}>
                     {nextRide.rideTime
                       ? new Date(nextRide.rideTime).toLocaleTimeString([], {
                           hour: "2-digit",
@@ -132,30 +150,37 @@ export default function HomeScreen() {
                   </Text>
                 </View>
                 <View className="flex-row items-center">
-                  <Ionicons name="location-outline" size={20} color="white" />
-                  <Text className="text-white/70 ml-3">
+                  <Ionicons name="location-outline" size={20} color="#4B5563" />
+                  <Text className="ml-3 font-interRegular" style={{ color: "#4B5563" }}>
                     {nextRide.rideDestination}
                   </Text>
                 </View>
               </View>
               <TouchableOpacity
-                style={{ backgroundColor: "#ff6b36" }}
+                style={{ backgroundColor: "#000000" }}
                 className="rounded-xl py-4 items-center"
               >
-                <Text className="text-white font-semibold">View Details</Text>
+                <Text className="text-white font-interBold">View Details</Text>
               </TouchableOpacity>
             </View>
           </View>
         ) : (
-           <View className="bg-white/10 mx-6 rounded-2xl p-6 mb-4 border border-white/20">
-            <Text className="text-white/70 text-center">No upcoming rides found</Text>
-            <Text className="text-white/70 text-center mt-6">Create one or join one to continue !</Text>
+          <View className="mx-6 rounded-2xl shadow-lg p-6 mb-4 border border-white/20" style={{ backgroundColor: "#F9FAFB" }}>
+            <Text className="text-center" style={{ color: "#4B5563" }}>
+              No upcoming rides found
+            </Text>
+            <Text className="text-center mt-6" style={{ color: "#4B5563" }}>
+              Create one or join one to continue !
+            </Text>
           </View>
         )}
 
         {/* Upcoming Rides Section */}
         <View className="mx-6 mt-8">
-          <Text className="text-white text-2xl font-bold mb-6">
+          <Text
+            className="text-2xl font-interBold mb-6"
+            style={{ color: "#0A0A0A" }}
+          >
             Upcoming Rides
           </Text>
         </View>
@@ -163,8 +188,8 @@ export default function HomeScreen() {
         {upcomingRides.length > 0 ? (
           upcomingRides.map((ride) => <RideCard key={ride._id} ride={ride} />)
         ) : (
-          <View className="bg-white/10 mx-6 rounded-2xl p-6 mb-4 border border-white/20">
-            <Text className="text-white/70 text-center">
+          <View className="shadow-lg mx-6 rounded-2xl p-6 mb-4 border border-white/20" style={{ backgroundColor: "#F9FAFB" }}>
+            <Text className="text-center font-interRegular" style={{ color: "#4B5563" }}>
               No upcoming rides found
             </Text>
           </View>

@@ -80,17 +80,17 @@ const InviteButton: React.FC<InviteButtonProps> = ({ id }) => {
     <View>
       {/* Title */}
       <View className="flex-row items-center justify-between mb-3">
-        <Text className="text-white text-xl font-bold">Invite Rider</Text>
+        <Text className="text-xl font-bold" style={{color:"#0A0A0A"}}>Invite Rider</Text>
         <TouchableOpacity className="p-2" onPress={showInviteInfo}>
-          <Ionicons name="help-circle" size={20} color="white" />
+          <Ionicons name="help-circle" size={20} color="4B5563" />
         </TouchableOpacity>
       </View>
 
       {/* Email Input */}
       <TextInput
-        className="border border-white rounded-lg p-3 mb-4 text-white text-base"
+        className="rounded-lg p-3 shadow-lg mb-4 text-black bg-white text-base"
         placeholder="someone@gmail.com"
-        placeholderTextColor="#64748b"
+        placeholderTextColor="#4B5563"
         value={inviteeEmail}
         onChangeText={setInviteeEmail}
         keyboardType="email-address"
@@ -99,7 +99,7 @@ const InviteButton: React.FC<InviteButtonProps> = ({ id }) => {
 
       {/* Invite Button */}
       <TouchableOpacity
-        className={`bg-yellow-500 rounded-lg mt-3 ${isInviting ? "opacity-70" : ""}`}
+        className={`bg-black shadow-lg rounded-lg mt-3 ${isInviting ? "opacity-70" : ""}`}
         onPress={handleInviteUser}
         disabled={isInviting}
       >
@@ -110,56 +110,5 @@ const InviteButton: React.FC<InviteButtonProps> = ({ id }) => {
     </View>
   );
 };
-// const styles = StyleSheet.create({
-//   inviteBtn: {
-//     backgroundColor: "#f59e0b",
-//     padding: 12,
-//     borderRadius: 8,
-//     marginTop: 12,
-//   },
-//   inviteBtnText: {
-//     color: "white",
-//     fontWeight: "bold",
-//     textAlign: "center",
-//     padding: 8,
-//   },
-//   emailInput: {
-//     borderWidth: 1,
-//     borderColor: "white",
-//     borderRadius: 8,
-//     padding: 12,
-//     marginBottom: 16,
-//     fontSize: 16,
-//     color: "white",
-//   },
-//   inviteBtnDisabled: {
-//     opacity: 0.7,
-//   },
-//   memberItem: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     padding: 12,
-//   },
-//   memberName: {
-//     fontSize: 16,
-//   },
-//   memberEmail: {
-//     fontSize: 16,
-//   },
-//   sectionTitle: {
-//     fontSize: 20,
-//     fontWeight: "bold",
-//     marginBottom: 12,
-//     color: "white",
-//   },
-//   titleContainer: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     justifyContent: "space-between",
-//     marginBottom: 12,
-//   },
-//   infoButton: {
-//     padding: 8,
-//   },
-// });
+
 export default InviteButton;

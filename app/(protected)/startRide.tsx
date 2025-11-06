@@ -48,7 +48,7 @@ const StartRide = () => {
   const [ride, setRide] = useState<Ride | null>(null);
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  console.log('userloc', userLocation)
+  console.log("userloc", userLocation);
 
   const MAPTILER_API_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY;
 
@@ -205,10 +205,9 @@ const StartRide = () => {
 
           {/* Top Overlay */}
           <View className="absolute top-4 left-0 right-0 px-4 flex-row items-center justify-between">
-
             {/* Destination Card */}
             <View
-              className="bg-white flex-row flex-1 p-3 rounded-lg gap-2 items-center "
+              className="bg-white flex-row flex-1 p-3 rounded-lg gap-2 items-center"
               style={{
                 shadowColor: "#000",
                 shadowOpacity: 0.1,
@@ -217,44 +216,23 @@ const StartRide = () => {
               }}
             >
               <Ionicons name="location-outline" size={16} color="black" />
-              <Text
-                className="text-lg  text-black"
-                numberOfLines={2}
-              >
-                {ride?.rideDestination || "Destination"}
-              </Text>
-              <TouchableOpacity  onPress={() => router.back()}>
+
+              <View className="flex-1">
+                <Text
+                  className="text-md font-interRegular text-black"
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                >
+                  {ride?.rideDestination || "Destination"}
+                </Text>
+              </View>
+
+              {/* Close Button stays at end always */}
+              <TouchableOpacity onPress={() => router.back()}>
                 <Ionicons name="close-outline" size={22} color="black" />
               </TouchableOpacity>
             </View>
           </View>
-
-          {/* Route Info Card (Distance & Duration) */}
-          {/* {routeInfo && !isLoadingRoute && (
-            <View
-              className="absolute top-20 right-4 bg-white px-4 py-2 rounded-full flex-row items-center gap-3"
-              style={{
-                shadowColor: "#000",
-                shadowOpacity: 0.15,
-                shadowRadius: 3,
-                elevation: 5,
-              }}
-            >
-              <View className="flex-row items-center gap-1">
-                <Ionicons name="car-outline" size={16} color="#ff6b36" />
-                <Text className="text-sm font-semibold text-gray-700">
-                  {FormatDistance(routeInfo.distance)}
-                </Text>
-              </View>
-              <View className="w-px h-4 bg-gray-300" />
-              <View className="flex-row items-center gap-1">
-                <Ionicons name="time-outline" size={16} color="#ff6b36" />
-                <Text className="text-sm font-semibold text-gray-700">
-                  {FormatDuration(routeInfo.duration)}
-                </Text>
-              </View>
-            </View>
-          )} */}
 
           {/* NEW - Loading Indicator for route fetching */}
           {isLoadingRoute && (
@@ -269,13 +247,12 @@ const StartRide = () => {
                 }}
               >
                 <ActivityIndicator size="small" color="#ff6b36" />
-                <Text className="text-md font-medium text-white">
+                <Text className="text-md font-interMedium text-white">
                   Calculating route...
                 </Text>
               </View>
             </View>
           )}
-          
 
           {/* floating locate button */}
           <TouchableOpacity
@@ -289,7 +266,7 @@ const StartRide = () => {
                 });
               }
             }}
-            className="absolute bottom-[22%] z-30 right-4 w-14 h-14 rounded-full bg-orange-600 justify-center items-center shadow-lg"
+            className="absolute bottom-[22%] right-4 w-14 h-14 rounded-full bg-orange-600 justify-center items-center shadow-lg"
           >
             <Ionicons name="locate" size={28} color="white" />
           </TouchableOpacity>
@@ -306,18 +283,22 @@ const StartRide = () => {
             <View className="p-4">
               <View className="flex-row items-center justify-between">
                 <View>
-                  <Text className="text-2xl font-bold">Ready to Ride?</Text>
-                  <Text className="text-lg my-4">Riders Status</Text>
+                  <Text className="text-2xl font-interBold">
+                    Ready to Ride?
+                  </Text>
+                  <Text className="text-lg my-4 font-interMedium">
+                    Riders Status
+                  </Text>
                 </View>
-               
-                  <TouchableOpacity
-                    className="py-6 px-4 rounded-2xl items-center justify-center mb-4"
-                    onPress={() =>
-                      router.push(`/(protected)/liveRideScreen?id=${ride?._id}`)
-                    }
-                  >
-                    <Text className="font-semibold ">Start Ride</Text>
-                  </TouchableOpacity>
+
+                <TouchableOpacity
+                  className="py-6 px-4 rounded-2xl items-center justify-center mb-4"
+                  onPress={() =>
+                    router.push(`/(protected)/liveRideScreen?id=${ride?._id}`)
+                  }
+                >
+                  <Text className="font-interMedium">Start Ride</Text>
+                </TouchableOpacity>
                 {/* {isAdmin && (
                   <TouchableOpacity
                     className="py-6 px-4 rounded-2xl items-center justify-center mb-4"
@@ -330,7 +311,7 @@ const StartRide = () => {
                       router.push(`/(protected)/liveRideScreen?id=${ride?._id}`)
                     }
                   >
-                    <Text className="font-semibold text-white">Start Ride</Text>
+                    <Text className="font-interMedium text-white">Start Ride</Text>
                   </TouchableOpacity>
                 )} */}
               </View>
@@ -364,7 +345,7 @@ const StartRide = () => {
                 }
               }}
             >
-              <Text className="font-semibold text-white">
+              <Text className="font-interMedium text-white">
                 {isReady ? "Not ready " : " I'm Ready"}
               </Text>
             </TouchableOpacity>

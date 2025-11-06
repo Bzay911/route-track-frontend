@@ -8,7 +8,7 @@ import {
 } from "@maplibre/maplibre-react-native";
 import { Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useRide } from "@/contexts/RideContext";
 import { Ride } from "@/types/ride";
@@ -106,7 +106,7 @@ const liveRideScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       {/* Map */}
-      <View className="flex-1">
+      <View className="flex-1 relative">
         <MapView
           style={{ flex: 1 }}
           mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${MAPTILER_API_KEY}`}
@@ -228,7 +228,7 @@ const liveRideScreen = () => {
         <View className="absolute top-4 left-0 right-0 px-4 flex-row items-center justify-between">
           {/* Destination Card */}
           <View
-            className="bg-white flex-row flex-1 mx-2 p-3 rounded-lg items-center gap-4"
+            className="bg-white flex-row flex-1 mx-2 p-3 rounded-lg items-center gap-2"
             style={{
               shadowColor: "#000",
               shadowOpacity: 0.1,
@@ -237,24 +237,51 @@ const liveRideScreen = () => {
             }}
           >
             <Ionicons name="location-outline" size={16} color="black" />
-            <Text className="text-lg  text-black" numberOfLines={2}>
+            <Text
+              className="text-md font-interRegular  text-black"
+              numberOfLines={2}
+            >
               {ride?.rideDestination || "Destination"}
             </Text>
           </View>
         </View>
+
+        <TouchableOpacity
+          onPress={() => {
+            if (userLocation) {
+              cameraRef.current?.setCamera({
+                centerCoordinate: [userLocation.lon, userLocation.lat],
+                zoomLevel: 14,
+                animationDuration: 1000,
+                animationMode: "flyTo",
+              });
+            }
+          }}
+          className=" flex-row absolute bottom-[5%] z-30 rounded-xl right-4 h-14 gap-2 bg-white justify-around items-center shadow-lg p-2"
+        >
+          <Ionicons name="navigate-outline" size={18} color="green" />
+          <Text className="font-interMedium">Re-center</Text>
+        </TouchableOpacity>
       </View>
 
       <View className="h-[100px] bg-white flex-row items-center justify-between px-4">
+        <TouchableOpacity
+          className="bg-white border border-gray-500 rounded-full p-2"
+          onPress={() => router.back()}
+        >
+          <Ionicons name="close-outline" size={32} color={"gray"} />
+        </TouchableOpacity>
+
         <View className="flex-col justify-center">
           <View className="flex-row items-center gap-2">
-            <Ionicons name="car-outline" size={24} color="#ff6b36" />
-            <Text className="text-green-600 font-semibold text-[28px] leading-none">
+            <Ionicons name="car-outline" size={26} color="#ff6b36" />
+            <Text className="text-green-600 font-interMedium text-[24px] leading-none">
               {FormatDuration(routeInfo?.duration ?? 0)}
             </Text>
           </View>
           <View className="flex-row items-center gap-2">
-            <Ionicons name="time-outline" size={24} color="#ff6b36" />
-            <Text className="text-gray-500 text-lg leading-none mt-1">
+            <Ionicons name="time-outline" size={20} color="#ff6b36" />
+            <Text className="text-gray-500 font-interMedium text-[16px] leading-none mt-1">
               {" "}
               {FormatDistance(routeInfo?.distance ?? 0)}
             </Text>
@@ -262,10 +289,19 @@ const liveRideScreen = () => {
         </View>
 
         <TouchableOpacity
-          className="bg-red-500 rounded-lg px-6 py-4"
-          onPress={() => router.back()}
+          className="bg-white border border-gray-500 rounded-full p-4"
+          onPress={() => {
+            if (ride && userLocation) {
+              cameraRef.current?.fitBounds(
+                [userLocation.lon, userLocation.lat],
+                ride.destinationCoords,
+                [30, 30, 30, 30],
+                1000
+              );
+            }
+          }}
         >
-          <Text className="text-white text-lg">Exit</Text>
+          <Ionicons name="map-outline" size={22} color={"gray"} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

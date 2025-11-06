@@ -27,26 +27,29 @@ const Rides = () => {
       showsHorizontalScrollIndicator={false}
       className="px-4 py-2"
     >
-      {filters.map((filter) => {
-        const isActive = activeFilter === filter;
-        return (
-          <TouchableOpacity
-            key={filter}
-            onPress={() => setActiveFilter(filter)}
-            className={`mr-3 px-4 py-2 rounded-full border ${
-              isActive
-                ? "bg-blue-500 border-blue-500"
-                : "bg-transparent border-white/30"
-            }`}
-          >
-            <Text
-              className={`font-semibold ${isActive ? "text-white" : "text-white/70"}`}
-            >
-              {filter.charAt(0).toUpperCase() + filter.slice(1)}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+     {filters.map((filter) => {
+  const isActive = activeFilter === filter;
+  return (
+    <TouchableOpacity
+      key={filter}
+      onPress={() => setActiveFilter(filter)}
+      className={`mr-3 px-4 py-2 rounded-full border ${
+        isActive
+          ? "bg-black border-black"
+          : "bg-gray-100 border-gray-300"
+      }`}
+    >
+      <Text
+        className={`font-interMedium ${
+          isActive ? "text-white" : "text-gray-800"
+        }`}
+      >
+        {filter.charAt(0).toUpperCase() + filter.slice(1)}
+      </Text>
+    </TouchableOpacity>
+  );
+})}
+
     </ScrollView>
   );
 
@@ -55,7 +58,7 @@ const Rides = () => {
     return (
       <View className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" />
-        <Text className="text-gray-500 mt-2">Loading rides...</Text>
+        <Text className="text-gray-500 mt-2 font-interRegular">Loading rides...</Text>
       </View>
     );
   }
@@ -70,9 +73,9 @@ const Rides = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1" style={{ backgroundColor: "#1a1f3a" }}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: "#f5f5f5" }}>
       <View className="pt-4 pb-2 px-4">
-        <Text className="text-2xl font-bold text-white">Rides</Text>
+        <Text className="text-2xl font-interBold" style={{color:"#0A0A0A"}}>Rides</Text>
       </View>
       <View className="mb-4">{renderFilterChips()}</View>
 
