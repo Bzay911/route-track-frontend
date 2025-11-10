@@ -104,10 +104,10 @@ const Rides = () => {
       <TouchableOpacity
         onPress={() => router.push("/(protected)/createRide")}
          style={{ backgroundColor: "#7B3FE4" }}
-        className="absolute bottom-32 right-4 h-16 flex-row items-center justify-center gap-2 shadow-lg px-2 rounded-xl"
+        className="absolute bottom-32 right-4 h-16 flex-row items-center justify-center gap-1 shadow-lg px-2 rounded-xl"
       >
-        <Ionicons name="add" size={18} color="white" />
-        <Text className="text-white font-interRegular text-sm">Create Ride</Text>
+        <Ionicons name="add" size={20} color="white" />
+        <Text className="text-white font-interRegular text-md">Create Ride</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

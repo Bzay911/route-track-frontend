@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import formatDate from "@/utils/FormatDate";
 import formatTime from "@/utils/FormatTime";
 import { Ride } from "@/types/ride";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 // Ride Card Component
 const RideCard = ({ ride }: { ride: Ride }) => {
@@ -50,7 +51,8 @@ const RideCard = ({ ride }: { ride: Ride }) => {
 
         {/* Riders count */}
         <View className="flex-row justify-end items-center">
-          <Ionicons name="bicycle-outline" size={16} color="#4B5563" />
+          {/* <Ionicons name="bicycle-outline" size={16} color="#4B5563" /> */}
+          <MaterialCommunityIcons name="racing-helmet" size={20} color="#4B5563" />
           <Text className="ml-2 font-interRegular" style={{color: "#4B5563"}}>
             {ride.riders.length || 0} riders
           </Text>

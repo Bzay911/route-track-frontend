@@ -2,40 +2,70 @@ import { useEffect } from "react";
 import * as Location from "expo-location";
 import { getSocket } from "../sockets/rideSockets";
 
+/**
+ * useLiveLocation
+ * Continuously tracks user location and emits it to socket for a ride session.
+ * Automatically cleans up on unmount.
+ */
 export default function useLiveLocation(rideId: string, userId: string) {
   useEffect(() => {
-    let isActive = true;
+    let locationSubscription: Location.LocationSubscription | null = null;
+    let isMounted = true;
 
     const startTracking = async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") return;
+      try {
+        console.log("📍 Requesting location permissions...");
+        const { status } = await Location.requestForegroundPermissionsAsync();
 
-      const sendLocation = async () => {
-        if (!isActive) return;
+        if (status !== "granted") {
+          console.error("❌ Location permission denied!");
+          return;
+        }
 
-        const location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Highest,
-        });
+        console.log("✅ Permission granted. Starting live location tracking...");
 
-        getSocket().emit("userLocationUpdate", {
-          rideId,
-          userId,
-          lat: location.coords.latitude,
-          lon: location.coords.longitude,
-        });
+        // Start continuous tracking
+        locationSubscription = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.Highest, // use Balanced for battery saving
+            timeInterval: 5000, // update every 5 seconds
+            distanceInterval: 0, // or set to e.g., 5 (meters) to reduce updates
+          },
+          (location) => {
+            if (!isMounted) return;
 
-        // Schedule the next call after 15 seconds
-        setTimeout(sendLocation, 15000);
-      };
+            const { latitude, longitude } = location.coords;
+            console.log("📡 Location update:", { latitude, longitude });
 
-      // Start the first call
-      sendLocation();
+            // Emit to socket
+            try {
+              const socket = getSocket();
+              socket.emit("userLocationUpdate", {
+                rideId,
+                userId,
+                lat: latitude,
+                lon: longitude,
+              });
+              console.log("✅ Location sent to socket");
+            } catch (socketError) {
+              console.error("⚠️ Socket emission failed:", socketError);
+            }
+          }
+        );
+      } catch (error) {
+        console.error("❌ Error starting location tracking:", error);
+      }
     };
 
     startTracking();
 
     return () => {
-      isActive = false; // stop future timeouts on unmount
+      console.log("🔴 Cleaning up live location watcher...");
+      isMounted = false;
+      if (locationSubscription) {
+        locationSubscription.remove();
+        locationSubscription = null;
+      }
     };
-  }, [rideId]);
+  }, [rideId, userId]);
 }

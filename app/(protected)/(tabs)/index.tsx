@@ -64,17 +64,34 @@ export default function HomeScreen() {
 
   // // Find the next upcoming ride (first future date)
   const now = new Date();
-  const nextRide = sortedRides.find((ride) => {
+
+  let nextRide = sortedRides.find((ride) => {
     const rideDate = new Date(ride.rideDate || 0);
-    return rideDate > now;
+    return (
+      rideDate.getDate() === now.getDate() &&
+      rideDate.getMonth() === now.getMonth() &&
+      rideDate.getFullYear() === now.getFullYear()
+    );
   });
 
-  // // Get remaining upcoming rides (all future dates except the next one)
+  // If no ride today, pick the next upcoming ride (future date)
+  if (!nextRide) {
+    nextRide = sortedRides.find((ride) => new Date(ride.rideDate || 0) > now);
+  }
+
+  // // Get remaining upcoming rides
   const upcomingRides = sortedRides.filter((ride) => {
     const rideDate = new Date(ride.rideDate || 0);
 
-    return rideDate > now && ride._id !== nextRide?._id;
+    // Include rides scheduled for today (any time of day) or after today
+    const isSameDay =
+      rideDate.getDate() === now.getDate() &&
+      rideDate.getMonth() === now.getMonth() &&
+      rideDate.getFullYear() === now.getFullYear();
+
+    return (rideDate > now || isSameDay) && ride._id !== nextRide?._id;
   });
+
   return (
     <SafeAreaView className="flex-1" style={{ backgroundColor: "#f5f5f5" }}>
       {/* Header */}
@@ -111,7 +128,11 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
         {/* Next Ride Section */}
         {nextRide ? (
           <View className="mx-6 mt-6">

@@ -160,7 +160,7 @@ export default function Details() {
           </View>
 
           {/* Tabs */}
-          <View className="flex-row mx-6 mt-8 mb-4 shadow-lg rounded-2xl overflow-hidden">
+          <View className="flex-row mx-6 mt-8 mb-4 shadow-lg rounded-lg overflow-hidden">
             <TouchableOpacity
               onPress={() => setActiveTab("members")}
               className={`flex-1 py-2 ${activeTab === "members" ? "bg-[#7B3FE4]" : "bg-gray-100"}`}

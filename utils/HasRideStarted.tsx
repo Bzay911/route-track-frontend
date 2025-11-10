@@ -3,7 +3,7 @@ import { Ride } from "@/types/ride";
 export default function hasRideStarted(ride: Ride) {
 
   const now = new Date();
-
+  // compares current date and time with ride date and time
   if (ride.rideDate && ride.rideTime) {
     const rideDate = new Date(ride.rideDate);
     const rideTime = new Date(ride.rideTime);

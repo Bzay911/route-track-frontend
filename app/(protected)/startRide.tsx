@@ -5,7 +5,7 @@ import {
   MapView,
   ShapeSource,
   LineLayer,
-  CircleLayer
+  CircleLayer,
 } from "@maplibre/maplibre-react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useRef, useEffect, useState } from "react";
@@ -15,6 +15,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,6 +29,8 @@ import {
 } from "@/sockets/rideSockets";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRoute } from "@/contexts/RouteContext";
+import PulseAnimation from "@/components/animations/PulseAnimation";
+import hasRideStarted from "@/utils/HasRideStarted";
 
 const StartRide = () => {
   const router = useRouter();
@@ -44,11 +47,10 @@ const StartRide = () => {
     clearRoute,
   } = useRoute();
   const [ride, setRide] = useState<Ride | null>(null);
+  const [rideCanBeStarted, setRideCanBeStarted] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
-
-  console.log("userloc", userLocation);
-
   const MAPTILER_API_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY;
+  const [adminStartedRide, setAdminStartedRide] = useState(false);
 
   // checking if admin
   const isAdmin = ride?.createdby?.toString() === user?._id;
@@ -71,6 +73,7 @@ const StartRide = () => {
     ];
     fetchRoute([userLocation.lon, userLocation.lat], destination, ride._id);
   }, [userLocation, ride?._id]);
+
 
   // useEffect to get ride details by id
   useEffect(() => {
@@ -100,10 +103,53 @@ const StartRide = () => {
       setRide((prev) => (prev ? { ...prev, riders: updatedRiders } : prev));
     });
 
+    socket.on("rideStartedByAdmin", () => {
+      setAdminStartedRide(true);
+      setRideCanBeStarted(true);
+    });
+
     return () => {
       disconnectSocket();
     };
   }, [id]);
+
+  // checking if ride can be started
+  useEffect(() => {
+    if (!ride) return;
+    hasRideStarted(ride)
+      ? setRideCanBeStarted(true)
+      : setRideCanBeStarted(false);
+  }, [ride]);
+
+  const handleGoBtnPress = (ride: Ride) => {
+    if (!hasRideStarted(ride)) {
+      Alert.alert(
+        "Ride has not started yet",
+        "The scheduled start time hasn't arrived. Do you want to start anyway?",
+        [
+          { text: "Wait", style: "cancel" },
+          {
+            text: "Start anyway",
+            onPress: () => {
+              const socket = getSocket();
+              (router.push(`/(protected)/liveRideScreen?id=${ride?._id}`),
+                socket.emit("adminStartedTheRide", {
+                  rideId: ride._id,
+                }));
+            },
+          },
+        ]
+      );
+    } else {
+      // if yes proceed to the live ride screen
+      router.push(`/(protected)/liveRideScreen?id=${ride?._id}`);
+    }
+  };
+
+  // checking if all riders are ready
+  const handleRidersCheck = (ride: Ride) => {
+   return ride.riders.every(rider => rider.ready);
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -187,7 +233,6 @@ const StartRide = () => {
                   coordinates: ride?.destinationCoords || [115.7628, -32.1174], // else fallback to coogee
                 },
                 properties: {},
-                
               }}
             >
               <CircleLayer
@@ -228,7 +273,7 @@ const StartRide = () => {
 
               {/* Close Button stays at end always */}
               <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons name="close-outline" size={22} color="black" />
+                <Ionicons name="close-outline" size={24} color="black" />
               </TouchableOpacity>
             </View>
           </View>
@@ -253,6 +298,60 @@ const StartRide = () => {
             </View>
           )}
 
+          {/* Start ride button */}
+          {/* Checking if ride can be started, if time has arrived show green button else gray button  */}
+          {rideCanBeStarted ? (
+            // ride can be started, displaying green pulse button
+            <View className="absolute bottom-[24%] left-[50%] translate-x-[-50%] items-center justify-center">
+              <PulseAnimation size={80} color="rgba(34, 197, 94, 0.3)" />
+              <TouchableOpacity
+                className="p-6 rounded-full items-center justify-center shadow-lg"
+                style={{ backgroundColor: "#22c55e" }}
+                onPress={() => {
+                  if (!ride) return;
+                  handleGoBtnPress(ride);
+                }}
+              >
+                <Text className="text-2xl font-interMedium text-white">Go</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View className="absolute bottom-[24%] left-[50%] translate-x-[-50%] items-center justify-center">
+              <TouchableOpacity
+                className="p-6 rounded-full items-center justify-center shadow-lg bg-gray-400"
+                onPress={() => {
+                  if (!ride) return;
+                  if (isAdmin) {
+                    if (handleRidersCheck(ride)) {
+                      handleGoBtnPress(ride);
+                    } else {
+                      Alert.alert(
+                        "Not all riders are ready",
+                        "Please ensure all riders are marked as ready before starting the ride.",
+                        [
+                          { text: "OK", style: "cancel" },
+                          {
+                            text: "Start anyway",
+                            onPress: () => handleGoBtnPress(ride),
+                          },
+                        ]
+                      );
+                    }
+                  } else {
+                    Alert.alert(
+                      "Admin has not started yet",
+                      "Please wait for the admin to start the ride.",
+                      [{ text: "OK", style: "cancel" }]
+                    );
+                  }
+                }}
+              >
+                <Text className="text-2xl font-interMedium text-white">Go</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+
           {/* floating locate button */}
           <TouchableOpacity
             onPress={() => {
@@ -265,9 +364,9 @@ const StartRide = () => {
                 });
               }
             }}
-            className="absolute bottom-[22%] right-4 w-14 h-14 rounded-full bg-violet-600 justify-center items-center shadow-lg"
+            className="absolute bottom-[22%] right-4 p-3 rounded-full bg-black justify-center items-center shadow-lg"
           >
-            <Ionicons name="locate" size={28} color="white" />
+            <Ionicons name="locate" size={22} color="white" />
           </TouchableOpacity>
         </View>
 
@@ -289,30 +388,7 @@ const StartRide = () => {
                     Riders Status
                   </Text>
                 </View>
-
-                <TouchableOpacity
-                  className="py-6 px-4 rounded-2xl items-center justify-center mb-4"
-                  onPress={() =>
-                    router.push(`/(protected)/liveRideScreen?id=${ride?._id}`)
-                  }
-                >
-                  <Text className="font-interMedium">Start Ride</Text>
-                </TouchableOpacity>
-                {/* {isAdmin && (
-                  <TouchableOpacity
-                    className="py-6 px-4 rounded-2xl items-center justify-center mb-4"
-                    style={{
-                      backgroundColor:
-                        isAdmin && routeGeoJSON ? "#22c55e" : "#94a3b8", // green if ready, gray if disabled
-                    }}
-                    disabled={!isAdmin || !routeGeoJSON} // disable button if not admin or route not ready
-                    onPress={() =>
-                      router.push(`/(protected)/liveRideScreen?id=${ride?._id}`)
-                    }
-                  >
-                    <Text className="font-interMedium text-white">Start Ride</Text>
-                  </TouchableOpacity>
-                )} */}
+            
               </View>
               <FlatList
                 data={ride?.riders || []}
