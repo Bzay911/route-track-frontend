@@ -13,7 +13,7 @@ import { Ride } from "../types/ride";
 // Define the context value interface
 interface RideContextValue {
   rides: Ride[] | null;
-  fetchAllRides: () => Promise<void>;
+  // fetchAllRides: () => Promise<void>;
   isLoading?: boolean;
   error?: string | null;
   setRides: React.Dispatch<React.SetStateAction<Ride[] | null>>;
@@ -34,10 +34,7 @@ export const RideProvider = ({ children }: RideProviderProps) => {
   const { token } = useAuth();
 
   useEffect(() => {
-    fetchAllRides();
-  }, []);
-
-  const fetchAllRides = async (): Promise<void> => {
+      const fetchAllRides = async (): Promise<void> => {
     try {
       setIsLoading(true);
       setError(null);
@@ -66,6 +63,11 @@ export const RideProvider = ({ children }: RideProviderProps) => {
     }
   };
 
+    fetchAllRides();
+  }, [token]);
+
+
+
   const fetchRideById = async (id: string): Promise<Ride | null> => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/rides/get-ride/${id}`, {
@@ -88,7 +90,7 @@ export const RideProvider = ({ children }: RideProviderProps) => {
 
   const contextValue: RideContextValue = {
     rides,
-    fetchAllRides,
+    // fetchAllRides,
     isLoading,
     error,
     setRides,

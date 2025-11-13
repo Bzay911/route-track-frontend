@@ -15,16 +15,20 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import hasRideStarted from "@/utils/HasRideStarted";
 import { useAuth } from "@/contexts/AuthContext";
+import hasRideStarted from "@/utils/HasRideStarted";
 import PulseAnimation from "@/components/animations/PulseAnimation";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { rides } = useRide();
-  const [modalVisible, setModalVisible] = useState(false);
-  const { user } = useAuth();
 
+  // Contexts
+  const { rides } = useRide();
+  const { user } = useAuth();
+  
+  // States
+  const [modalVisible, setModalVisible] = useState(false);
+  
   // checking if the started time has arrived yet
   const handleRidePress = (ride: Ride) => {
     // if not show alert
@@ -36,13 +40,13 @@ export default function HomeScreen() {
           { text: "Wait", style: "cancel" },
           {
             text: "Start anyway",
-            onPress: () => router.push(`/startRide?id=${ride._id}`),
+            onPress: () => router.push(`/StartRide?id=${ride._id}`),
           },
         ]
       );
     } else {
       // if yes proceed to the lobby
-      router.push(`/startRide?id=${ride._id}`);
+      router.push(`/StartRide?id=${ride._id}`);
     }
   };
 
@@ -235,7 +239,7 @@ export default function HomeScreen() {
             <TouchableOpacity
               className="p-4 w-full mt-6 shadow-lg rounded-xl items-center"
               style={{ backgroundColor: "#7B3FE4" }}
-              onPress={() => router.push("/(protected)/createRide")}
+              onPress={() => router.push("/(protected)/CreateRide")}
             >
               <Text className="text-white font-interRegular">Create ride</Text>
             </TouchableOpacity>

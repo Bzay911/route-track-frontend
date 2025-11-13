@@ -15,9 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const Rides = () => {
    const router = useRouter();
   const { rides, isLoading, error } = useRide();
-  const [activeFilter, setActiveFilter] = useState<
-    "all" | "today" | "upcoming" | "past"
-  >("all");
+  const [activeFilter, setActiveFilter] = useState<"all" | "today" | "upcoming" | "past">("all");
 
   const filters = ["all", "today", "upcoming", "past"] as const;
 
@@ -29,6 +27,8 @@ const Rides = () => {
     >
      {filters.map((filter) => {
   const isActive = activeFilter === filter;
+
+  // Filters chip rendering
   return (
     <TouchableOpacity
       key={filter}
@@ -49,7 +49,6 @@ const Rides = () => {
     </TouchableOpacity>
   );
 })}
-
     </ScrollView>
   );
 
@@ -102,7 +101,7 @@ const Rides = () => {
       )}
         {/* Floating Action Button */}
       <TouchableOpacity
-        onPress={() => router.push("/(protected)/createRide")}
+        onPress={() => router.push("/(protected)/CreateRide")}
          style={{ backgroundColor: "#7B3FE4" }}
         className="absolute bottom-32 right-4 h-16 flex-row items-center justify-center gap-1 shadow-lg px-2 rounded-xl"
       >

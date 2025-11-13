@@ -6,17 +6,17 @@ import {
   LineLayer,
   CircleLayer,
 } from "@maplibre/maplibre-react-native";
-import { Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useRide } from "@/contexts/RideContext";
 import { Ride } from "@/types/ride";
-import { useRoute } from "@/contexts/RouteContext";
 import FormatDistance from "@/utils/FormatDistance";
 import FormatDuration from "@/utils/FormatDuration";
 import { getSocket } from "@/sockets/rideSockets";
-import useLiveLocation from "@/utils/UseLiveLocation";
+import { useFetchRoute } from "@/hooks/customHooks/UseFetchRoute";
+import useUserLiveLocation from "@/hooks/customHooks/useUserLiveLocation";
 import { useAuth } from "@/contexts/AuthContext";
 
 type RiderLocation = {
@@ -25,24 +25,25 @@ type RiderLocation = {
   lon: number;
 };
 
-const liveRideScreen = () => {
+const LiveRideScreen = () => {
   const router = useRouter();
-  const { user } = useAuth();
-  const MAPTILER_API_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY;
   const { id } = useLocalSearchParams();
+
+  // contexts and hooks
   const { fetchRideById } = useRide();
+  const { routeGeoJSON, routeInfo, fetchRoute, cameraRef } = useFetchRoute();
+  const { userLocation, error, isLoading } = useUserLiveLocation();
+  const { user } = useAuth();
+
+  // states
   const [ride, setRide] = useState<Ride | null>(null);
-  const { routeGeoJSON, routeInfo, fetchRoute, cameraRef, userLocation } =
-    useRoute();
-  const [ridersLocations, setRidersLocations] = useState<
-    { userId: string; lat: number; lon: number }[]
-  >([]);
+  const [ridersLocations, setRidersLocations] = useState<{ userId: string; lat: number; lon: number }[]>([]);
 
-  useLiveLocation(ride?._id as string, user?._id as string);
+  const MAPTILER_API_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY;
 
+  // Fetching ride details for live ride screen based on ride id
   useEffect(() => {
     if (!id) return;
-
     const fetchRideDetails = async () => {
       try {
         const data = await fetchRideById(id as string);
@@ -54,17 +55,18 @@ const liveRideScreen = () => {
     };
 
     fetchRideDetails();
-  }, [id]);
+  }, [id, fetchRideById]);
 
+  // Fetching route when user location or ride destination changes
   useEffect(() => {
-    if (!userLocation || !ride || !routeGeoJSON) return;
-
+    if (!userLocation || !ride) return;
     const destination: [number, number] = ride.destinationCoords || [
       115.7628, -32.1174,
     ];
-    fetchRoute([userLocation.lon, userLocation.lat], destination);
+    fetchRoute([userLocation.lon, userLocation.lat], destination, ride._id);
   }, [userLocation, ride]);
 
+  // Fitting map bounds to show both user location and destination
   useEffect(() => {
     if (routeGeoJSON && userLocation && ride?.destinationCoords) {
       // Ensure the camera ref is ready
@@ -77,12 +79,13 @@ const liveRideScreen = () => {
         );
       }, 500);
     }
-  }, [routeGeoJSON, userLocation, ride]);
+  }, [routeGeoJSON, userLocation, ride, cameraRef]);
 
   // Listening to other user's live location
   useEffect(() => {
     const socket = getSocket();
 
+    // setting new incoming location updates from other riders
     const handleLocationUpdate = ({ userId, lat, lon }: RiderLocation) => {
       setRidersLocations((prev) => {
         const existing = prev.find((r) => r.userId === userId);
@@ -95,6 +98,7 @@ const liveRideScreen = () => {
       });
     };
 
+    // listening to location updates from backend socket (handleLocationUpdate)
     socket.on("updateRiderLocation", handleLocationUpdate);
 
     //  Clean up when leaving screen
@@ -102,6 +106,21 @@ const liveRideScreen = () => {
       socket.off("updateRiderLocation", handleLocationUpdate);
     };
   }, []);
+
+   // Emit user location to socket whenever it updates
+  useEffect(() => {
+    if (!userLocation || !ride?._id || !user?._id) return;
+    
+    const socket = getSocket();
+    socket.emit("userLocationUpdate", {
+      rideId: ride._id,
+      userId: user._id,
+      lat: userLocation.lat,
+      lon: userLocation.lon,
+    });
+    
+    console.log("✅ My location sent to socket");
+  }, [userLocation, ride?._id, user?._id]);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -318,4 +337,4 @@ const liveRideScreen = () => {
   );
 };
 
-export default liveRideScreen;
+export default LiveRideScreen;

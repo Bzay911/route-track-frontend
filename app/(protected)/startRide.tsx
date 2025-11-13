@@ -1,87 +1,62 @@
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-import {
-  Camera,
-  MapView,
-  ShapeSource,
-  LineLayer,
-  CircleLayer,
-} from "@maplibre/maplibre-react-native";
+import {Camera, MapView, ShapeSource, LineLayer,CircleLayer } from "@maplibre/maplibre-react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useRef, useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
-  Alert,
-} from "react-native";
+import { ActivityIndicator, FlatList, Text, TouchableOpacity, View, Alert } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LobbyRiderCard from "../../components/rideCards/LobbyRiderCard";
 import { Ride } from "@/types/ride";
 import { useRide } from "@/contexts/RideContext";
-import {
-  initRideSocket,
-  getSocket,
-  disconnectSocket,
-} from "@/sockets/rideSockets";
+import { initRideSocket, getSocket, disconnectSocket } from "@/sockets/rideSockets";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRoute } from "@/contexts/RouteContext";
 import PulseAnimation from "@/components/animations/PulseAnimation";
 import hasRideStarted from "@/utils/HasRideStarted";
+import { useFetchRoute } from "@/hooks/customHooks/UseFetchRoute";
+import useUserLiveLocation from "@/hooks/customHooks/useUserLiveLocation";
 
 const StartRide = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams();
+
+  // contexts and hooks
   const { user } = useAuth();
   const { fetchRideById } = useRide();
-  const {
-    routeGeoJSON,
-    routeInfo,
-    fetchRoute,
-    isLoadingRoute,
-    cameraRef,
-    userLocation,
-    clearRoute,
-  } = useRoute();
+  const { routeGeoJSON, fetchRoute, isLoadingRoute, cameraRef } = useFetchRoute();
+  const { userLocation, error, isLoading } = useUserLiveLocation();
+
+  // states and refs
   const [ride, setRide] = useState<Ride | null>(null);
   const [rideCanBeStarted, setRideCanBeStarted] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const MAPTILER_API_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY;
   const [adminStartedRide, setAdminStartedRide] = useState(false);
+
+  const MAPTILER_API_KEY = process.env.EXPO_PUBLIC_MAP_API_KEY;
 
   // checking if admin
   const isAdmin = ride?.createdby?.toString() === user?._id;
-
   const currentRider = ride?.riders?.find((r) => r.user._id === user?._id);
   const isReady = currentRider?.ready;
 
-  // Clear route when component unmounts or ride changes
-  useEffect(() => {
-    return () => {
-      clearRoute();
-    };
-  }, [id]); // Clear when ride ID changes
+  console.log("Ride in StartRide screen:", ride);
+  console.log("User location in StartRide screen:", userLocation);
 
+  // useEffect to fetch route when userLocation or ride changes
   useEffect(() => {
     if (!userLocation || !ride) return;
-
     const destination: [number, number] = ride.destinationCoords || [
       115.7628, -32.1174,
     ];
     fetchRoute([userLocation.lon, userLocation.lat], destination, ride._id);
-  }, [userLocation, ride?._id]);
+  }, [userLocation, ride]);
 
-
-  // useEffect to get ride details by id
+  // useEffect to get ride details by id and setting it to ride state
   useEffect(() => {
     if (!id) return;
-
     const fetchRideDetails = async () => {
       try {
-        clearRoute();
+        // clearRoute();
         const data = await fetchRideById(id as string);
         setRide(data);
       } catch (error) {
@@ -89,9 +64,8 @@ const StartRide = () => {
       } finally {
       }
     };
-
     fetchRideDetails();
-  }, [id]);
+  }, [id, fetchRideById]);
 
   // useEffect for socket
   useEffect(() => {
@@ -116,9 +90,11 @@ const StartRide = () => {
   // checking if ride can be started
   useEffect(() => {
     if (!ride) return;
-    hasRideStarted(ride)
-      ? setRideCanBeStarted(true)
-      : setRideCanBeStarted(false);
+    if (hasRideStarted(ride)) {
+      setRideCanBeStarted(true);
+    } else {
+      setRideCanBeStarted(false);
+    }
   }, [ride]);
 
   const handleGoBtnPress = (ride: Ride) => {
@@ -132,23 +108,21 @@ const StartRide = () => {
             text: "Start anyway",
             onPress: () => {
               const socket = getSocket();
-              (router.push(`/(protected)/liveRideScreen?id=${ride?._id}`),
-                socket.emit("adminStartedTheRide", {
-                  rideId: ride._id,
-                }));
+              router.push(`/(protected)/LiveRideScreen?id=${ride?._id}`);
+              socket.emit("adminStartedTheRide", { rideId: ride._id });
             },
           },
         ]
       );
     } else {
       // if yes proceed to the live ride screen
-      router.push(`/(protected)/liveRideScreen?id=${ride?._id}`);
+      router.push(`/(protected)/LiveRideScreen?id=${ride?._id}`);
     }
   };
 
   // checking if all riders are ready
   const handleRidersCheck = (ride: Ride) => {
-   return ride.riders.every(rider => rider.ready);
+    return ride.riders.every((rider) => rider.ready);
   };
 
   return (
@@ -351,7 +325,6 @@ const StartRide = () => {
             </View>
           )}
 
-
           {/* floating locate button */}
           <TouchableOpacity
             onPress={() => {
@@ -388,7 +361,6 @@ const StartRide = () => {
                     Riders Status
                   </Text>
                 </View>
-            
               </View>
               <FlatList
                 data={ride?.riders || []}

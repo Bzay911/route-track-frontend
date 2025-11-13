@@ -21,7 +21,7 @@ function LayoutController() {
     } else {
       router.replace("/(protected)/(tabs)");
     }
-  }, [isMounted, loading, token]);
+  }, [isMounted, loading, token, router]);
 
   if (!isMounted || loading) {
     return (

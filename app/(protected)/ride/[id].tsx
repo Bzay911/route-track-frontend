@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ScrollView,
@@ -17,24 +17,27 @@ import { useRide } from "@/contexts/RideContext";
 import { Ride } from "@/types/ride";
 import InviteButton from "@/components/button/InviteButton";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRouter } from "expo-router";
 import hasRideStarted from "@/utils/HasRideStarted";
 
 type Tab = "members" | "invite";
 
 export default function Details() {
+  const router = useRouter();
   const { id } = useLocalSearchParams();
-  const [activeTab, setActiveTab] = useState<Tab>("members");
+
+  //Contexts
   const { fetchRideById } = useRide();
+  const { user } = useAuth();
+
+  // States
+  const [activeTab, setActiveTab] = useState<Tab>("members");
   const [ride, setRide] = useState<Ride | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const { user } = useAuth();
-  const router = useRouter();
 
+  // useEffect to fetch ride detaiils based on id
   useEffect(() => {
     if (!id) return;
-
     const fetchRideDetails = async () => {
       setLoading(true);
       try {
@@ -46,10 +49,10 @@ export default function Details() {
         setLoading(false);
       }
     };
-
     fetchRideDetails();
-  }, [id]);
+  }, [id, fetchRideById]);
 
+  // useEffect to check if user is admin
   useEffect(() => {
     if (ride?.createdby && user?._id) {
       setIsAdmin(ride.createdby.toString() === user._id.toString());
@@ -82,13 +85,13 @@ export default function Details() {
           { text: "Wait", style: "cancel" },
           {
             text: "Go anyway",
-            onPress: () => router.push(`/startRide?id=${ride._id}`),
+            onPress: () => router.push(`/StartRide?id=${ride._id}`),
           },
         ]
       );
     } else {
       // if yes proceed to the lobby
-      router.push(`/startRide?id=${ride._id}`);
+      router.push(`/StartRide?id=${ride._id}`);
     }
   };
 

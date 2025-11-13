@@ -31,7 +31,7 @@ const PulseAnimation: React.FC<PulseProps> = ({
 
     pulse.start();
     return () => pulse.stop();
-  }, []);
+  }, [opacity, scale]);
 
   return (
     <Animated.View

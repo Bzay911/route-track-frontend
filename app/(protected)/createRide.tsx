@@ -2,7 +2,7 @@ import { API_BASE_URL } from "@/config/apiConfig";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Alert,
   Platform,
@@ -19,21 +19,23 @@ import { useAuth } from "@/contexts/AuthContext";
 import AutoCompleteTextField from "@/components/textField/AutoCompleteTextField";
 
 const CreateRide = () => {
+  const router = useRouter();
+
+  // Contexts
+  const { setRides } = useRide();
+  const { token } = useAuth();
+
+  // States 
   const [rideName, setRideName] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<Date | null>(null);
   const [description, setDescription] = useState("");
-  const [destinationCoords, setDestinationCoords] = useState<
-    [number, number] | null
-  >(null);
+  const [destinationCoords, setDestinationCoords] = useState<[number, number] | null>(null);
   const [destinationName, setDestinationName] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { setRides } = useRide();
-  const { token } = useAuth();
 
-  const router = useRouter();
   const handleDateChange = (event: any, date?: Date) => {
     setShowDatePicker(false);
     if (date) {

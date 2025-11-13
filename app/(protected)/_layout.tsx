@@ -37,7 +37,7 @@ export default function ProtectedLayout() {
               <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen
-                  name="createRide"
+                  name="CreateRide"
                   options={{ headerShown: false }}
                 />
                 <Stack.Screen
@@ -47,11 +47,11 @@ export default function ProtectedLayout() {
                   }}
                 />
                 <Stack.Screen
-                  name="startRide"
+                  name="StartRide"
                   options={{ headerShown: false }}
                 />
                 <Stack.Screen
-                  name="liveRideScreen"
+                  name="LiveRideScreen"
                   options={{ headerShown: false }}
                 />
               </Stack>
