@@ -8,8 +8,8 @@ interface LocationCoords {
 
 export default function useUserLiveLocation() {
   const [location, setLocation] = useState<LocationCoords | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(true);
 
   useEffect(() => {
     let locationSubscription: Location.LocationSubscription | null = null;
@@ -22,8 +22,8 @@ export default function useUserLiveLocation() {
 
         if (status !== "granted") {
           console.error("Location permission denied!");
-          setError("Location permission denied");
-          setIsLoading(false);
+          setLocationError("Location permission denied");
+          setIsLoadingLocation(false);
           return;
         }
 
@@ -32,26 +32,26 @@ export default function useUserLiveLocation() {
         // 1. Get initial location immediately
         try {
           const initialLocation = await Location.getCurrentPositionAsync({
-            accuracy: Location.Accuracy.High,
+            accuracy: Location.Accuracy.Balanced,
           });
           
           if (isMounted) {
             const { latitude, longitude } = initialLocation.coords;
             console.log("Initial location:", { latitude, longitude });
             setLocation({ lat: latitude, lon: longitude });
-            setIsLoading(false);
+            setIsLoadingLocation(false);
           }
         } catch (err) {
           console.error("Could not get initial location:", err);
-          setError("Could not get initial location");
-          setIsLoading(false);
+          setLocationError("Could not get initial location");
+          setIsLoadingLocation(false);
         }
 
         // 2. Start continuous tracking
         console.log("Starting continuous location tracking...");
         locationSubscription = await Location.watchPositionAsync(
           {
-            accuracy: Location.Accuracy.High,
+            accuracy: Location.Accuracy.Balanced,
             timeInterval: 5000, // update every 5 seconds
             distanceInterval: 10, // or update when moved 10 meters
           },
@@ -65,8 +65,8 @@ export default function useUserLiveLocation() {
         );
       } catch (err) {
         console.error("Error starting location tracking:", err);
-        setError("Failed to start location tracking");
-        setIsLoading(false);
+        setLocationError("Failed to start location tracking");
+        setIsLoadingLocation(false);
       }
     };
 
@@ -82,5 +82,5 @@ export default function useUserLiveLocation() {
     };
   }, []); // Empty dependency array - only run once on mount
 
-  return { userLocation : location, error, isLoading };
+  return { userLocation : location, locationError, isLoadingLocation };
 }

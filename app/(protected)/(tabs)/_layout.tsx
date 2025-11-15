@@ -6,9 +6,9 @@ import { HapticTab } from "@/components/haptic-tab";
 import { Colors } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import CustomTabBar from "@/components/tabbar/CustomTabBar";
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Octicons from '@expo/vector-icons/Octicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -36,7 +36,7 @@ export default function TabLayout() {
         options={{
           title: "Rides",
           tabBarIcon: ({ color, focused }) => (
-            <FontAwesome5 name="motorcycle" size={24} color={color}/>
+            <MaterialCommunityIcons name="racing-helmet" size={26} color={color} />
           ),
         }}
       />

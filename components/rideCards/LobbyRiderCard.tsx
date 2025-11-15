@@ -1,6 +1,10 @@
-import { View, Text } from 'react-native';
+import { View, Text } from "react-native";
+import FormatDistance from "@/utils/FormatDistance";
+import FormatDuration from "@/utils/FormatDuration";
 
-const LobbyRiderCard = (rider: any) => {
+
+const LobbyRiderCard = (props: any) => {
+  const { rider, routeInfo } = props;
   return (
     <View className="bg-white rounded-2xl p-4 flex-row items-center justify-between border border-gray-200 shadow-sm relative">
       {/* Left Section: Avatar + Info */}
@@ -8,7 +12,7 @@ const LobbyRiderCard = (rider: any) => {
         {/* Avatar */}
         <View className="bg-black rounded-full w-12 h-12 items-center justify-center mr-4">
           <Text className="text-xl font-interBold text-white">
-            {rider.user.email?.charAt(0).toUpperCase() || 'U'}
+            {rider.user.email?.charAt(0).toUpperCase() || "U"}
           </Text>
         </View>
 
@@ -21,9 +25,14 @@ const LobbyRiderCard = (rider: any) => {
 
           {/* Distance and ETA Row */}
           <View className="flex-row items-center">
-            <Text className="text-gray-600 text-sm font-interRegular">16km</Text>
+            <Text className="text-gray-600 text-sm font-interRegular">
+              {FormatDistance(routeInfo?.distance ?? 0)}
+            </Text>
             <Text className="text-gray-400 mx-2 font-interRegular">•</Text>
-            <Text className="text-gray-600 text-sm font-interRegular">32 mins</Text>
+            <Text className="text-gray-600 text-sm font-interRegular">
+              {" "}
+              {FormatDuration(routeInfo?.duration ?? 0)}
+            </Text>
           </View>
         </View>
       </View>
@@ -31,15 +40,15 @@ const LobbyRiderCard = (rider: any) => {
       {/* Right Section: Status Badge */}
       <View
         className={`rounded-full px-4 py-2 ${
-          rider.ready ? 'bg-green-500' : 'bg-gray-200'
+          rider.ready ? "bg-green-500" : "bg-gray-200"
         }`}
       >
         <Text
           className={`text-sm font-interRegular ${
-            rider.ready ? 'text-white' : 'text-gray-600'
+            rider.ready ? "text-white" : "text-gray-600"
           }`}
         >
-          {rider.ready ? 'Ready' : 'Not Ready'}
+          {rider.ready ? "Ready" : "Not Ready"}
         </Text>
       </View>
     </View>

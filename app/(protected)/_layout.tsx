@@ -11,6 +11,7 @@ import { RideProvider } from "../../contexts/RideContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { RouteProvider } from "@/contexts/RouteContext";
+import { SocketProvider } from "@/contexts/SocketContext";
 import { useFonts } from "expo-font";
 
 export default function ProtectedLayout() {
@@ -34,6 +35,7 @@ export default function ProtectedLayout() {
         >
           <RideProvider>
             <RouteProvider>
+              <SocketProvider>
               <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen
@@ -55,6 +57,7 @@ export default function ProtectedLayout() {
                   options={{ headerShown: false }}
                 />
               </Stack>
+              </SocketProvider>
             </RouteProvider>
           </RideProvider>
           <StatusBar style="auto" />

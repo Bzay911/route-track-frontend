@@ -13,7 +13,6 @@ import { Ride } from "../types/ride";
 // Define the context value interface
 interface RideContextValue {
   rides: Ride[] | null;
-  // fetchAllRides: () => Promise<void>;
   isLoading?: boolean;
   error?: string | null;
   setRides: React.Dispatch<React.SetStateAction<Ride[] | null>>;
@@ -90,7 +89,6 @@ export const RideProvider = ({ children }: RideProviderProps) => {
 
   const contextValue: RideContextValue = {
     rides,
-    // fetchAllRides,
     isLoading,
     error,
     setRides,
